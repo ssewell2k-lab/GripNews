@@ -1,0 +1,423 @@
+<?php
+/**
+ * GripNews.uk — Game Intelligence Page (Phase 6 Day 4)
+ * Displays game-specific intelligence profile: events, timeline, signals, clusters.
+ */
+require_once __DIR__ . '/includes/functions.php';
+
+$slug = isset($_GET['slug']) ? preg_replace('/[^a-z0-9\-]/', '', strtolower($_GET['slug'])) : '';
+if (!$slug) { header('Location: /'); exit; }
+$display = ucwords(str_replace('-', ' ', $slug));
+
+$page_title = "$display — Game Intelligence | GripNews";
+$page_desc  = "Intelligence profile for $display — events, impact trends, signals, and issue clusters.";
+$nav_active = '';
+
+require_once __DIR__ . '/includes/header.php';
+?>
+
+<style>
+  .game-hero { padding: 40px 0 24px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+  .game-title { font-size: 2.2em; font-weight: 800; color: var(--text-primary); letter-spacing: -0.5px; }
+  .game-title span { color: var(--accent); }
+  .health-badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 0.8em;
+    font-weight: 700; letter-spacing: 0.5px; margin-left: 16px; vertical-align: middle; }
+  .health-Healthy { background: rgba(0,230,118,0.15); color: #00e676; }
+  .health-Degraded { background: rgba(255,193,7,0.15); color: #ffc107; }
+  .health-Impacted { background: rgba(255,152,0,0.15); color: #ff9800; }
+  .health-Critical { background: rgba(244,67,54,0.15); color: #f44336; }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin: 24px 0 32px; }
+  .stat-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .stat-val { font-size: 1.8em; font-weight: 800; color: var(--accent); }
+  .stat-label { font-size: 0.72em; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-top: 4px; }
+
+  .section-title { font-size: 1.05em; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--accent); margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+  .timeline-item { display: grid; grid-template-columns: 90px 1fr auto; gap: 0 16px; padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04); align-items: start; }
+  .timeline-item:last-child { border-bottom: none; }
+  .tl-date { font-size: 0.78em; color: var(--text-secondary); font-family: var(--mono); padding-top: 2px; }
+  .tl-title { font-weight: 600; color: var(--text-primary); font-size: 0.95em; }
+  .tl-type { font-size: 0.68em; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 8px;
+    border-radius: 4px; font-weight: 700; display: inline-block; margin-top: 4px; }
+  .tl-impact { font-size: 1.4em; font-weight: 800; text-align: right; }
+  .tl-impact.high { color: #f44336; }
+  .tl-impact.mid { color: #ffc107; }
+  .tl-impact.low { color: var(--text-secondary); }
+
+  .event-card-mini { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px 20px; margin-bottom: 12px; transition: border-color 0.2s; }
+  .event-card-mini:hover { border-color: var(--accent); }
+  .ecm-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .ecm-title { font-weight: 700; color: var(--text-primary); flex: 1; }
+  .ecm-score { font-size: 1.3em; font-weight: 800; flex-shrink: 0; }
+  .ecm-score.high { color: #f44336; }
+  .ecm-score.mid { color: #ffc107; }
+  .ecm-score.low { color: var(--text-secondary); }
+  .ecm-fact { font-size: 0.88em; color: var(--text-secondary); line-height: 1.5; margin-top: 6px; }
+  .ecm-why { font-size: 0.85em; color: var(--cyan, #26c6da); font-style: italic; margin-top: 4px; }
+  .ecm-meta { display: flex; gap: 10px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+  .ecm-type-tag { font-size: 0.68em; text-transform: uppercase; padding: 2px 8px; border-radius: 4px;
+    font-weight: 700; letter-spacing: 0.5px; }
+  .ecm-conf { font-size: 0.75em; color: var(--text-secondary); }
+  .ecm-expand { background: none; border: 1px solid var(--accent); color: var(--accent); padding: 4px 12px;
+    border-radius: 6px; font-size: 0.78em; cursor: pointer; font-weight: 600; margin-top: 8px; transition: all 0.2s; }
+  .ecm-expand:hover { background: var(--accent); color: #000; }
+
+  .depth-inline { display: none; background: rgba(0,230,118,0.04); border: 1px solid rgba(0,230,118,0.12);
+    border-radius: 8px; padding: 16px 20px; margin-top: 10px; font-size: 0.88em; line-height: 1.6; color: var(--text-secondary); }
+  .depth-inline.open { display: block; }
+  .depth-inline h4 { color: var(--accent); font-size: 0.82em; text-transform: uppercase; letter-spacing: 1px; margin: 14px 0 6px; }
+  .depth-inline h4:first-child { margin-top: 0; }
+  .depth-inline p { margin: 6px 0; }
+  .impact-chip { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 0.78em;
+    font-family: var(--mono); margin: 2px 4px 2px 0; border: 1px solid rgba(255,255,255,0.08); }
+  .impact-chip.high { border-color: rgba(244,67,54,0.4); color: #f44336; }
+  .impact-chip.mid { border-color: rgba(255,193,7,0.4); color: #ffc107; }
+
+  .cluster-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 18px; margin-bottom: 10px; }
+  .cluster-label { font-weight: 700; color: var(--text-primary); font-size: 0.92em; }
+  .cluster-meta { font-size: 0.78em; color: var(--text-secondary); margin-top: 4px; }
+  .cluster-fixes { font-size: 0.82em; color: var(--cyan, #26c6da); margin-top: 6px; }
+
+  .strength-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.65em;
+    font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; margin-left: 8px; vertical-align: middle; }
+  .strength-strong { background: rgba(0,230,118,0.12); color: #00e676; border: 1px solid rgba(0,230,118,0.3); }
+  .strength-developing { background: rgba(255,193,7,0.12); color: #ffc107; border: 1px solid rgba(255,193,7,0.3); }
+  .strength-weak { background: rgba(255,255,255,0.06); color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.1); }
+  .reliability-strong .stat-val { color: #00e676; }
+  .reliability-developing .stat-val { color: #ffc107; }
+  .reliability-weak .stat-val { color: var(--text-secondary); }
+
+  .loader-game { text-align: center; padding: 60px 0; color: var(--text-secondary); }
+  .loader-game .pulse { display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent); animation: pulse 1s infinite; }
+  .back-link { color: var(--accent); text-decoration: none; font-size: 0.85em; display: inline-block; margin-bottom: 8px; }
+  .back-link:hover { text-decoration: underline; }
+</style>
+
+<section class="hero" style="padding-bottom: 0;">
+  <a href="/" class="back-link">← Back to Intelligence Feed</a>
+  <div class="game-hero">
+    <h1 class="game-title"><?= htmlspecialchars($display) ?> <span>Intelligence</span></h1>
+    <div id="health-container"></div>
+  </div>
+</section>
+
+<section class="content-wrapper" style="padding-top: 0;">
+  <div id="stats-container" class="stats-grid"></div>
+
+  <div id="game-loading" class="loader-game">
+    <span class="pulse"></span> Loading intelligence for <?= htmlspecialchars($display) ?>…
+  </div>
+
+  <div id="events-section" style="display:none;">
+    <div class="section-title">📰 Recent Events</div>
+    <div id="events-list"></div>
+  </div>
+
+  <div id="timeline-section" style="display:none;">
+    <div class="section-title">📅 Event Timeline</div>
+    <div id="timeline-list"></div>
+  </div>
+
+  <div id="signals-section" style="display:none;">
+    <div class="section-title">📡 Active Signals</div>
+    <div id="signals-list"></div>
+  </div>
+
+  <div id="reliability-section" style="display:none;">
+    <div class="section-title">🛡️ Signal Reliability</div>
+    <div id="reliability-grid" class="stats-grid"></div>
+  </div>
+
+  <div id="clusters-section" style="display:none;">
+    <div class="section-title">🔗 Issue Clusters</div>
+    <div id="clusters-list"></div>
+  </div>
+</section>
+
+?>
+<!-- ═══ WAS THIS USEFUL? ═══ -->
+<section class="feedback-widget" id="feedback-widget" style="max-width:900px;margin:40px auto 0;padding:24px;">
+  <div class="feedback-header">
+    <span class="feedback-icon">💡</span>
+    <span class="feedback-title">Was this game profile useful?</span>
+  </div>
+  <div class="feedback-buttons" id="feedback-btns">
+    <button class="fb-btn fb-useful" data-emoji="useful" onclick="sendFeedback('useful')">
+      <span class="fb-emoji">👍</span><span class="fb-label">Useful</span><span class="fb-count" id="count-useful"></span>
+    </button>
+    <button class="fb-btn fb-not-useful" data-emoji="not_useful" onclick="sendFeedback('not_useful')">
+      <span class="fb-emoji">👎</span><span class="fb-label">Not useful</span><span class="fb-count" id="count-not_useful"></span>
+    </button>
+    <button class="fb-btn fb-fire" data-emoji="fire" onclick="sendFeedback('fire')">
+      <span class="fb-emoji">🔥</span><span class="fb-label">Hot</span><span class="fb-count" id="count-fire"></span>
+    </button>
+    <button class="fb-btn fb-eyes" data-emoji="eyes" onclick="sendFeedback('eyes')">
+      <span class="fb-emoji">👀</span><span class="fb-label">Watching</span><span class="fb-count" id="count-eyes"></span>
+    </button>
+  </div>
+  <div class="feedback-thanks" id="feedback-thanks" style="display:none">
+    <span class="thanks-icon">✓</span> Thanks for your feedback!
+  </div>
+</section>
+
+<script>
+const API = 'https://gripai.uk/v2';
+const ITEM_TYPE = 'game';
+const ITEM_ID = '<?= e($slug) ?>';
+
+(async () => {
+  try {
+    const r = await fetch(`${API}/reactions/${ITEM_TYPE}/${encodeURIComponent(ITEM_ID)}`);
+    const d = await r.json();
+    if (d.counts) {
+      Object.entries(d.counts).forEach(([emoji, cnt]) => {
+        const el = document.getElementById(`count-${emoji}`);
+        if (el && cnt > 0) el.textContent = cnt;
+      });
+    }
+  } catch(e) {}
+})();
+
+async function sendFeedback(emoji) {
+  try {
+    const r = await fetch(`${API}/reactions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ item_type: ITEM_TYPE, item_id: ITEM_ID, emoji })
+    });
+    const d = await r.json();
+    ['useful','not_useful','fire','eyes'].forEach(e => {
+      const el = document.getElementById(`count-${e}`);
+      if (el) el.textContent = d.counts?.[e] || '';
+    });
+    document.querySelectorAll('.fb-btn').forEach(b => b.classList.remove('fb-active'));
+    if (d.action === 'added') {
+      document.querySelector(`[data-emoji="${emoji}"]`)?.classList.add('fb-active');
+    }
+    document.getElementById('feedback-thanks').style.display = 'flex';
+    setTimeout(() => { document.getElementById('feedback-thanks').style.display = 'none'; }, 3000);
+  } catch(e) {}
+}
+</script>
+
+<?php require_once __DIR__ . '/includes/footer.php'; ?>
+
+<script>
+  var API = "https://gripai.uk/v2";
+  var SLUG = "<?= $slug ?>";
+
+  function esc(s) {
+    var d = document.createElement("div");
+    d.textContent = s || "";
+    return d.innerHTML;
+  }
+
+  function impactClass(sc) {
+    if (sc >= 7) return "high";
+    if (sc >= 4) return "mid";
+    return "low";
+  }
+
+  function catColor(cat) {
+    var map = { industry: "#00e676", patch: "#ffc107", rumor: "#ab47bc", esports: "#42a5f5", meta_shift: "#ff5722" };
+    return map[(cat || "").toLowerCase()] || "#00e676";
+  }
+
+  Promise.all([
+    fetch(API + "/game/" + SLUG).then(function(r) { return r.json(); }),
+    fetch(API + "/game/" + SLUG + "/meta").then(function(r) { return r.json(); }),
+    fetch(API + "/game/" + SLUG + "/timeline").then(function(r) { return r.json(); }),
+    fetch(API + "/game/" + SLUG + "/reliability").then(function(r) { return r.json(); })
+  ]).then(function(results) {
+    var game = results[0];
+    var meta = results[1];
+    var timeline = results[2];
+    var reliability = results[3];
+
+    document.getElementById("game-loading").style.display = "none";
+
+    // Health badge
+    if (meta.health_score !== undefined) {
+      var label = meta.health_label || "Unknown";
+      document.getElementById("health-container").innerHTML =
+        '<span class="health-badge health-' + label + '">' + label.toUpperCase() + ' · ' + meta.health_score + '/100</span>';
+    }
+
+    // Stats grid
+    var stats = document.getElementById("stats-container");
+    var evCount = (game.events && game.events.count) || 0;
+    var sigCount = (game.signals && game.signals.count) || 0;
+    var issTotal = (game.issues && game.issues.total) || 0;
+    var issCrit = (game.issues && (parseInt(game.issues.critical) || 0)) || 0;
+    var avgImp = (meta.events && meta.events.avg_impact) ? parseFloat(meta.events.avg_impact).toFixed(1) : "—";
+    var peakImp = (meta.events && meta.events.peak_impact) || "—";
+
+    stats.innerHTML =
+      '<div class="stat-box"><div class="stat-val">' + evCount + '</div><div class="stat-label">Events</div></div>' +
+      '<div class="stat-box"><div class="stat-val">' + sigCount + '</div><div class="stat-label">Active Signals</div></div>' +
+      '<div class="stat-box"><div class="stat-val">' + issTotal + '</div><div class="stat-label">Issues Tracked</div></div>' +
+      '<div class="stat-box"><div class="stat-val">' + issCrit + '</div><div class="stat-label">Critical</div></div>' +
+      '<div class="stat-box"><div class="stat-val">' + avgImp + '</div><div class="stat-label">Avg Impact</div></div>' +
+      '<div class="stat-box"><div class="stat-val">' + peakImp + '</div><div class="stat-label">Peak Impact</div></div>';
+
+    // Events — improved "what changed / why it matters" structure
+    var events = (game.events && game.events.recent) || [];
+    if (events.length) {
+      document.getElementById("events-section").style.display = "block";
+      var evHtml = "";
+      events.forEach(function(ev) {
+        var imp = ev.impact || {};
+        var sc = Math.max(imp.player || 0, imp.dev || 0, imp.esports || 0, imp.industry || 0);
+        var col = catColor(ev.type);
+
+        evHtml += '<div class="event-card-mini">' +
+          '<div class="ecm-header">' +
+            '<div class="ecm-title">' + esc(ev.title) + '</div>' +
+            '<div class="ecm-score ' + impactClass(sc) + '">' + sc + '</div>' +
+          '</div>' +
+          '<div class="ecm-fact">' + esc(ev.summary) + '</div>';
+
+        if (ev.why_it_matters) {
+          evHtml += '<div class="ecm-why">↳ ' + esc(ev.why_it_matters) + '</div>';
+        }
+
+        var strengthLabel = ev.signal_strength || "developing";
+        evHtml += '<div class="ecm-meta">' +
+          '<span class="ecm-type-tag" style="background:' + col + '20;color:' + col + '">' + esc(ev.type || ev.category) + '</span>' +
+          '<span class="ecm-conf">' + esc(ev.confidence) + '</span>' +
+          '<span class="strength-badge strength-' + strengthLabel + '">' + strengthLabel + '</span>' +
+          '</div>';
+
+        evHtml += '<button class="ecm-expand" onclick="expandEvent(\'' + esc(ev.event_id) + '\', this)">🧠 Ask GripAI</button>' +
+          '<div class="depth-inline" id="depth-game-' + esc(ev.event_id) + '"></div>';
+
+        evHtml += '</div>';
+      });
+      document.getElementById("events-list").innerHTML = evHtml;
+    }
+
+    // Timeline
+    var tl = timeline.timeline || [];
+    if (tl.length) {
+      document.getElementById("timeline-section").style.display = "block";
+      var tlHtml = "";
+      tl.forEach(function(t) {
+        var dateStr = (t.event_date || "").split("T")[0];
+        var col = catColor(t.event_type);
+        tlHtml += '<div class="timeline-item">' +
+          '<span class="tl-date">' + esc(dateStr) + '</span>' +
+          '<div><span class="tl-title">' + esc(t.title) + '</span>' +
+          '<span class="tl-type" style="background:' + col + '15;color:' + col + '">' + esc(t.event_type) + '</span></div>' +
+          '<span class="tl-impact ' + impactClass(t.impact_score) + '">' + (t.impact_score || 0) + '</span>' +
+          '</div>';
+      });
+      document.getElementById("timeline-list").innerHTML = tlHtml;
+    }
+
+    // Signals
+    var sigs = (game.signals && game.signals.active) || [];
+    if (sigs.length) {
+      document.getElementById("signals-section").style.display = "block";
+      var sigHtml = "";
+      sigs.forEach(function(s) {
+        sigHtml += '<div class="cluster-card">' +
+          '<div class="cluster-label">' + esc(s.signal_type || s.type) + '</div>' +
+          '<div class="cluster-meta">Severity: ' + esc(s.severity) + ' · Confidence: ' + (s.confidence || "—") + ' · Detected: ' + esc((s.first_detected || "").split("T")[0]) + '</div>' +
+          '</div>';
+      });
+      document.getElementById("signals-list").innerHTML = sigHtml;
+    }
+
+    // Clusters
+    var clusters = game.clusters || [];
+    if (clusters.length) {
+      document.getElementById("clusters-section").style.display = "block";
+      var clHtml = "";
+      clusters.forEach(function(c) {
+        clHtml += '<div class="cluster-card">' +
+          '<div class="cluster-label">' + esc(c.label) + '</div>' +
+          '<div class="cluster-meta">' + c.issue_count + ' issues · ' + esc(c.category) + ' · ' + esc(c.status) + '</div>';
+        if (c.fixes && c.fixes.length) {
+          clHtml += '<div class="cluster-fixes">💡 ' + c.fixes.slice(0, 2).map(esc).join(" · ") + '</div>';
+        }
+        clHtml += '</div>';
+      });
+      document.getElementById("clusters-list").innerHTML = clHtml;
+    }
+
+    // Reliability (Day 6)
+    if (reliability && reliability.events) {
+      var rv = reliability.events;
+      var rs = reliability.signals || {};
+      document.getElementById("reliability-section").style.display = "block";
+      document.getElementById("reliability-grid").innerHTML =
+        '<div class="stat-box reliability-strong"><div class="stat-val">' + (rv.strong || 0) + '</div><div class="stat-label">Strong Events</div></div>' +
+        '<div class="stat-box reliability-developing"><div class="stat-val">' + (rv.developing || 0) + '</div><div class="stat-label">Developing</div></div>' +
+        '<div class="stat-box reliability-weak"><div class="stat-val">' + (rv.weak || 0) + '</div><div class="stat-label">Weak</div></div>' +
+        '<div class="stat-box"><div class="stat-val">' + (rv.avg_confidence || 0) + '</div><div class="stat-label">Avg Confidence</div></div>' +
+        '<div class="stat-box"><div class="stat-val">' + (rv.avg_evidence || 0) + '</div><div class="stat-label">Avg Evidence</div></div>' +
+        '<div class="stat-box"><div class="stat-val">' + (rv.avg_sources || 0) + '</div><div class="stat-label">Avg Sources</div></div>';
+    }
+
+  }).catch(function(err) {
+    document.getElementById("game-loading").innerHTML =
+      '<p style="color:#ffc107;">Unable to load game data right now. <a href="/" style="color:var(--accent);">Return to feed</a></p>';
+  });
+
+  // Expand event depth
+  window.expandEvent = function(eventId, btn) {
+    var panel = document.getElementById("depth-game-" + eventId);
+    if (!panel) return;
+    if (panel.dataset.loaded === "1") { panel.classList.toggle("open"); return; }
+
+    btn.textContent = "⏳ Analysing…";
+    btn.disabled = true;
+
+    fetch(API + "/news/event/" + eventId)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var ev = data.event || {};
+        var detail = ev.detail || [];
+        var html = '<h4>🔍 Deep Analysis</h4>';
+        if (detail.length) {
+          detail.forEach(function(d) { html += '<p>' + esc(d) + '</p>'; });
+        }
+        if (ev.jaffaai_insight) {
+          html += '<h4>🧠 JaffaAI Insight</h4><p>' + esc(ev.jaffaai_insight) + '</p>';
+        }
+        var imp = ev.impact || {};
+        html += '<h4>📊 Impact Breakdown</h4><div class="impact-breakdown">';
+        ["player","dev","esports","industry"].forEach(function(k) {
+          var v = imp[k] || 0;
+          var cls = v >= 7 ? "high" : (v >= 4 ? "mid" : "");
+          html += '<span class="impact-chip ' + cls + '">' + k.charAt(0).toUpperCase() + k.slice(1) + ': ' + v + '/10</span>';
+        });
+        html += '</div>';
+
+        var realSources = (ev.sources || []).filter(function(s) { return s.url && s.url.indexOf("example.com") === -1; });
+        if (realSources.length) {
+          html += '<h4>📎 Sources</h4>';
+          realSources.forEach(function(src) {
+            html += '<a href="' + esc(src.url) + '" target="_blank" style="color:var(--accent);font-size:0.85em;display:block;margin-top:4px;">' + esc(src.name || src.url) + ' →</a>';
+          });
+        }
+
+        panel.innerHTML = html;
+        panel.dataset.loaded = "1";
+        panel.classList.add("open");
+        btn.textContent = "🧠 GripAI Analysis ▾";
+        btn.disabled = false;
+      }).catch(function() {
+        panel.innerHTML = '<p style="color:#ffc107;">Unable to load analysis right now.</p>';
+        panel.classList.add("open");
+        btn.textContent = "🧠 Ask GripAI";
+        btn.disabled = false;
+      });
+  };
+</script>

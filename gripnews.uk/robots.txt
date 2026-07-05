@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /publish
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+Sitemap: https://gripnews.uk/sitemap.xml
+Sitemap: https://gripnews.uk/blog-sitemap.xml

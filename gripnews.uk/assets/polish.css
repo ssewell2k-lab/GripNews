@@ -1,0 +1,492 @@
+/* GripNews — Visual Polish Layer v1.0
+   Overlays the base style.css to modernise the look.
+   Changes only visual properties (colors, gradients, shadows, typography).
+   Layout grid/flex logic stays in the base sheet. */
+
+/* ── Refined palette ─────────────────────────────────────── */
+:root {
+  --bg:            #090c13;
+  --bg-card:       #10151e;
+  --bg-card-hover: #151c28;
+  --border:        rgba(255,255,255,0.06);
+  --border-hover:  rgba(255,255,255,0.10);
+  --glow-accent:   rgba(244,97,52,0.15);
+  --glow-cyan:     rgba(43,142,177,0.10);
+}
+
+/* ── Global polish ───────────────────────────────────────── */
+body {
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(244,97,52,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(43,142,177,0.04) 0%, transparent 50%);
+  background-attachment: fixed;
+}
+
+::selection {
+  background: rgba(244,97,52,0.30);
+  color: #fff;
+}
+
+/* ── Header / Nav ────────────────────────────────────────── */
+header {
+  background: rgba(9,12,19,0.80) !important;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+  box-shadow: 0 1px 24px rgba(0,0,0,0.40);
+}
+
+.nav-links a,
+.nav-dropdown-trigger {
+  font-size: 0.82em;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  color: var(--text-muted);
+  transition: color 0.25s, transform 0.2s;
+  padding: 6px 0;
+  position: relative;
+}
+.nav-links a:hover,
+.nav-links a.active,
+.nav-dropdown-trigger:hover {
+  color: #fff;
+  transform: translateY(-1px);
+}
+.nav-links a.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.logo-grip {
+  background: linear-gradient(135deg, var(--accent) 0%, #ff9a6c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 900;
+}
+
+/* ── Hero ────────────────────────────────────────────────── */
+.hero {
+  padding: 56px 20px 20px;
+  position: relative;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 300px;
+  background: radial-gradient(ellipse, rgba(244,97,52,0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.hero-date {
+  font-size: 0.72em;
+  letter-spacing: 2.5px;
+  color: var(--text-dim);
+  opacity: 0.7;
+}
+
+.hero h1 {
+  font-size: 2.2em;
+  font-weight: 900;
+  letter-spacing: -1px;
+  background: linear-gradient(180deg, #fff 30%, var(--text-muted) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero h1 .count {
+  background: linear-gradient(135deg, var(--accent) 0%, #ff9a6c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: 0.92em;
+  color: var(--text-muted);
+  opacity: 0.85;
+}
+
+/* ── Live badge ──────────────────────────────────────────── */
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 0.72em !important;
+  letter-spacing: 1px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(34,197,94,0.08);
+  border: 1px solid rgba(34,197,94,0.20);
+  color: var(--green);
+  box-shadow: 0 0 20px rgba(34,197,94,0.08);
+}
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: live-pulse 2s ease-in-out infinite;
+}
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--green); }
+  50%      { opacity: 0.5; box-shadow: 0 0 16px var(--green); }
+}
+
+/* ── Signal cards ────────────────────────────────────────── */
+.signal-card {
+  padding: 22px 20px;
+  margin: 0 -20px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  border-radius: 14px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+.signal-card:hover {
+  background: linear-gradient(135deg, rgba(20,27,39,0.9) 0%, rgba(15,20,30,0.9) 100%);
+  border-color: transparent;
+  box-shadow:
+    0 4px 24px rgba(0,0,0,0.30),
+    0 0 0 1px rgba(255,255,255,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+  transform: translateY(-1px);
+}
+
+/* Rank number */
+.signal-rank {
+  font-weight: 900;
+  font-size: 1.6em;
+  color: rgba(255,255,255,0.12);
+  transition: color 0.3s;
+}
+.signal-card:hover .signal-rank {
+  color: var(--accent);
+  text-shadow: 0 0 24px rgba(244,97,52,0.3);
+}
+
+/* Title */
+.signal-title {
+  font-size: 1.05em;
+  font-weight: 700;
+  color: rgba(255,255,255,0.93);
+  line-height: 1.4;
+  transition: color 0.2s;
+}
+.signal-card:hover .signal-title {
+  color: #fff;
+}
+
+/* Summary */
+.signal-summary {
+  font-size: 0.88em;
+  line-height: 1.55;
+  color: var(--text-muted);
+  opacity: 0.85;
+}
+
+/* Category pills */
+.signal-category {
+  font-size: 0.65em;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+
+/* Strength badges */
+.signal-strength-badge {
+  font-size: 0.65em;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+
+/* Why line */
+.signal-why {
+  font-size: 0.8em;
+  opacity: 0.75;
+  margin-top: 8px;
+  padding: 6px 0;
+  border-left: 2px solid rgba(43,142,177,0.3);
+  padding-left: 10px;
+  font-style: italic;
+  color: var(--cyan);
+}
+
+/* ── Impact score ────────────────────────────────────────── */
+.signal-score {
+  min-width: 52px;
+}
+.score-value {
+  font-size: 1.6em;
+  font-weight: 900;
+  line-height: 1;
+}
+.score-value.score-high {
+  background: linear-gradient(135deg, var(--accent) 0%, #ff9a6c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 12px rgba(244,97,52,0.3));
+}
+.score-label {
+  font-size: 0.55em;
+  letter-spacing: 1.5px;
+  color: var(--text-dim);
+  opacity: 0.6;
+}
+.score-bar {
+  width: 3px;
+  height: 32px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 3px;
+  margin-top: 8px;
+}
+.score-fill {
+  border-radius: 3px;
+}
+.score-fill-high {
+  background: linear-gradient(to top, var(--accent), #ff9a6c);
+  box-shadow: 0 0 8px rgba(244,97,52,0.3);
+}
+
+/* ── Impact breakdown chips ──────────────────────────────── */
+.impact-breakdown {
+  gap: 5px;
+  margin-top: 10px;
+}
+.impact-chip {
+  font-size: 0.68em;
+  padding: 2px 9px;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.03);
+  color: var(--text-dim);
+  font-weight: 500;
+  transition: border-color 0.2s;
+}
+.impact-chip.high {
+  border-color: rgba(244,97,52,0.25);
+  color: var(--accent);
+  background: rgba(244,97,52,0.06);
+}
+.impact-chip.mid {
+  border-color: rgba(245,158,11,0.25);
+  color: var(--amber);
+  background: rgba(245,158,11,0.06);
+}
+
+/* ── Entity link tags ────────────────────────────────────── */
+.entity-link {
+  font-size: 0.72em;
+  padding: 3px 10px;
+  border-radius: 5px;
+  background: rgba(244,97,52,0.08);
+  border: 1px solid rgba(244,97,52,0.15);
+  color: var(--accent);
+  margin-right: 5px;
+  transition: all 0.2s;
+  display: inline-block;
+  margin-top: 2px;
+}
+.entity-link:hover {
+  background: rgba(244,97,52,0.15);
+  border-color: rgba(244,97,52,0.30);
+  color: var(--accent-hover);
+}
+
+/* ── Ask GripAI button ───────────────────────────────────── */
+.ask-gripai-btn {
+  font-size: 0.78em;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(43,142,177,0.25);
+  background: rgba(43,142,177,0.08);
+  color: var(--cyan);
+  cursor: pointer;
+  transition: all 0.25s;
+  margin-top: 10px;
+  font-family: var(--font);
+}
+.ask-gripai-btn:hover {
+  background: rgba(43,142,177,0.15);
+  border-color: rgba(43,142,177,0.40);
+  box-shadow: 0 0 16px rgba(43,142,177,0.12);
+  transform: translateY(-1px);
+}
+
+/* ── More signals divider ────────────────────────────────── */
+.more-divider::before {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%);
+}
+.more-label {
+  background: var(--bg);
+  color: var(--text-dim);
+  opacity: 0.7;
+}
+
+/* ── Category grid ───────────────────────────────────────── */
+.category-card {
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.02);
+  transition: all 0.25s;
+}
+.category-card:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.10);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+}
+
+/* ── Footer ──────────────────────────────────────────────── */
+.site-footer {
+  border-top: 1px solid rgba(255,255,255,0.04);
+  background: rgba(0,0,0,0.2);
+  padding: 36px 20px;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.14); }
+
+/* ── Story detail page polish ────────────────────────────── */
+.gripai-insight {
+  background: linear-gradient(135deg, rgba(43,142,177,0.06) 0%, rgba(244,97,52,0.04) 100%);
+  border: 1px solid rgba(43,142,177,0.15);
+  border-radius: 14px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.20);
+}
+
+/* ── Trends section polish ───────────────────────────────── */
+.trends-inner {
+  border: 1px solid rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.02);
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+}
+
+/* ── Smooth entrance animation ───────────────────────────── */
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.signal-card {
+  animation: fadeSlideIn 0.4s ease-out backwards;
+}
+.signal-card:nth-child(1)  { animation-delay: 0.02s; }
+.signal-card:nth-child(2)  { animation-delay: 0.04s; }
+.signal-card:nth-child(3)  { animation-delay: 0.06s; }
+.signal-card:nth-child(4)  { animation-delay: 0.08s; }
+.signal-card:nth-child(5)  { animation-delay: 0.10s; }
+.signal-card:nth-child(6)  { animation-delay: 0.12s; }
+.signal-card:nth-child(7)  { animation-delay: 0.14s; }
+.signal-card:nth-child(8)  { animation-delay: 0.16s; }
+.signal-card:nth-child(9)  { animation-delay: 0.18s; }
+.signal-card:nth-child(10) { animation-delay: 0.20s; }
+
+/* ── Mobile refinements ──────────────────────────────────── */
+@media (max-width: 700px) {
+  /* Fix: backdrop-filter on header creates a containing block,
+     so position:fixed on .nav-links becomes relative to header.
+     Remove backdrop-filter on mobile so the full-screen nav overlay works. */
+  header {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: var(--bg) !important;
+  }
+
+  /* Ensure nav overlay covers the full viewport */
+  .nav-links.open {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: var(--bg) !important;
+    z-index: 200 !important;
+  }
+
+  /* Reset polish styles for mobile nav links */
+  .nav-links a {
+    padding: 12px 16px !important;
+    font-size: 1.05em !important;
+    transform: none !important;
+  }
+  .nav-links a:hover {
+    transform: none !important;
+  }
+  .nav-links a.active::after {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero h1 {
+    font-size: 1.6em;
+    letter-spacing: -0.5px;
+  }
+  .signal-card {
+    padding: 16px 12px;
+    margin: 0 -12px;
+  }
+  .signal-card:hover {
+    transform: none;
+  }
+}
+
+/* ── Dropdown polish ─────────────────────────────────────── */
+.nav-dropdown-menu {
+  background: rgba(15,20,30,0.95) !important;
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.40) !important;
+  padding: 8px !important;
+}
+.nav-dropdown-menu a {
+  border-radius: 8px;
+  padding: 8px 14px !important;
+  transition: background 0.2s;
+}
+.nav-dropdown-menu a:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+/* ── Fallback notice polish ──────────────────────────────── */
+.fallback-notice {
+  border-radius: 10px;
+  border: 1px solid rgba(245,158,11,0.20);
+  background: rgba(245,158,11,0.06);
+}
+
+/* ── Daily Report link ───────────────────────────────────── */
+.report-btn,
+a[href*="report"] {
+  transition: all 0.25s;
+}

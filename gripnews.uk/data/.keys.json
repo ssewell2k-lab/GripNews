@@ -1,0 +1,20 @@
+[
+  {
+    "key": "gn_grip_master_2026_zK8nM4xR9",
+    "name": "Grip Master",
+    "tier": "enterprise",
+    "rate_limit": 50000,
+    "active": true,
+    "created": "2026-06-19",
+    "note": "Master key \u2014 full access"
+  },
+  {
+    "key": "gn_demo_2026_dQ7wL3pT5",
+    "name": "Demo Key",
+    "tier": "starter",
+    "rate_limit": 1000,
+    "active": true,
+    "created": "2026-06-19",
+    "note": "Demo key for developers page try-it-live"
+  }
+]

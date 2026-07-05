@@ -1,0 +1,648 @@
+{
+    "date": "2026-06-14",
+    "generated_at": "2026-06-14T21:15:02Z",
+    "total": 20,
+    "top_category": "Industry",
+    "signals": [
+        {
+            "title": "AMD 26.6.1 WHQL Driver Linked to 91 Issues",
+            "summary": "The AMD 26.6.1 WHQL driver is associated with 91 critical issues across various systems.",
+            "why_it_matters": "This driver problem could significantly affect player performance and stability across multiple games.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 8,
+                "dev": 3,
+                "esports": 2,
+                "industry": 7
+            },
+            "tags": [
+                "driver",
+                "AMD",
+                "issues",
+                "performance"
+            ],
+            "detail": [
+                "The AMD 26.6.1 WHQL driver has been identified as a source of 91 issues, impacting system stability and game performance.",
+                "This driver version is currently causing critical disruptions in gaming experience, with reports coming in from multiple game titles.",
+                "Users experiencing problems are advised to revert to a previous driver version until a fix is released."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=driver"
+                }
+            ]
+        },
+        {
+            "title": "ASUS 2.0 Driver Linked to 133 Issues",
+            "summary": "ASUS 2.0 driver has been reported to cause 133 issues across various platforms.",
+            "why_it_matters": "The high number of issues linked to this driver indicates a severe impact on system performance and user experience.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 9,
+                "dev": 4,
+                "esports": 3,
+                "industry": 8
+            },
+            "tags": [
+                "driver",
+                "ASUS",
+                "issues",
+                "stability"
+            ],
+            "detail": [
+                "The ASUS 2.0 driver is generating 133 issues, affecting both performance and stability across a wide range of systems.",
+                "Users have reported various problems, including crashes and system freezes, indicating a severe compatibility issue.",
+                "ASUS is yet to release an official statement or patch to resolve these issues."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=stability"
+                }
+            ]
+        },
+        {
+            "title": "Apple 18.1 Driver Issues Persist",
+            "summary": "Apple's 18.1 driver has been linked to 37 critical issues, continuing to affect user experience.",
+            "why_it_matters": "Persistent driver issues could lead to significant disruptions for users of Apple devices in gaming contexts.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 7,
+                "dev": 5,
+                "esports": 2,
+                "industry": 6
+            },
+            "tags": [
+                "driver",
+                "Apple",
+                "issues",
+                "compatibility"
+            ],
+            "detail": [
+                "Apple's 18.1 driver continues to cause critical issues, with 37 reported problems affecting user experience.",
+                "These issues range from performance drops to connectivity problems, impacting a wide range of applications.",
+                "Apple users are advised to monitor for updates or potential workarounds."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=Apple"
+                }
+            ]
+        },
+        {
+            "title": "Cross-Game Network Issues Affect 16 Games",
+            "summary": "Network issues have been reported across 16 different games, indicating a possible systemic problem.",
+            "why_it_matters": "Widespread network problems could disrupt multiplayer experiences significantly.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 8,
+                "dev": 6,
+                "esports": 5,
+                "industry": 7
+            },
+            "tags": [
+                "network",
+                "games",
+                "multiplayer",
+                "issues"
+            ],
+            "detail": [
+                "Network issues have been identified across 16 games, affecting connectivity and multiplayer experiences.",
+                "The widespread nature of these issues suggests a potential systemic problem, possibly linked to server infrastructure.",
+                "Players and developers are advised to check for updates or temporary fixes from game publishers."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=games"
+                }
+            ]
+        },
+        {
+            "title": "Intel 3.5 Driver Causing 38 Issues",
+            "summary": "Intel's 3.5 driver has been implicated in 38 critical issues, impacting system performance.",
+            "why_it_matters": "These issues could lead to performance degradation and stability problems across affected systems.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 7,
+                "dev": 4,
+                "esports": 2,
+                "industry": 6
+            },
+            "tags": [
+                "driver",
+                "Intel",
+                "issues",
+                "performance"
+            ],
+            "detail": [
+                "The Intel 3.5 driver is associated with 38 issues, affecting system performance and stability.",
+                "Users have reported various problems, including crashes and slow performance, across different applications.",
+                "Intel is expected to address these issues in an upcoming driver update."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=driver"
+                }
+            ]
+        },
+        {
+            "title": "Unreal Engine Matchmaking Bug Identified",
+            "summary": "A matchmaking bug in Unreal Engine has emerged, affecting game connectivity and player matching.",
+            "why_it_matters": "Such bugs can severely impact multiplayer experiences, leading to player frustration.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 9,
+                "dev": 8,
+                "esports": 5,
+                "industry": 7
+            },
+            "tags": [
+                "Unreal Engine",
+                "matchmaking",
+                "bug",
+                "multiplayer"
+            ],
+            "detail": [
+                "A significant matchmaking bug has been identified in Unreal Engine, disrupting player connectivity.",
+                "This issue affects the ability of players to connect and match in online multiplayer games using the engine.",
+                "Developers using Unreal Engine should monitor for patches or workarounds to address this bug."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=Unreal%20Engine"
+                }
+            ]
+        },
+        {
+            "title": "LG 580.119.02 Driver Linked to 41 Issues",
+            "summary": "The LG 580.119.02 driver is causing 41 critical issues, impacting device functionality.",
+            "why_it_matters": "Driver problems can lead to device malfunctions and poor user experiences, necessitating swift resolution.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 7,
+                "dev": 3,
+                "esports": 1,
+                "industry": 5
+            },
+            "tags": [
+                "driver",
+                "LG",
+                "issues",
+                "functionality"
+            ],
+            "detail": [
+                "The LG 580.119.02 driver is linked to 41 issues, affecting device functionality and user experience.",
+                "Problems range from connectivity issues to performance degradation, impacting various applications.",
+                "LG is advised to investigate and address these issues promptly to maintain device reliability."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=LG"
+                }
+            ]
+        },
+        {
+            "title": "Apple 2.0.6 Driver Issues Detected",
+            "summary": "Apple's 2.0.6 driver has been linked to 30 critical issues affecting system performance.",
+            "why_it_matters": "These driver issues could disrupt user experience significantly, especially in gaming contexts.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 6,
+                "dev": 4,
+                "esports": 2,
+                "industry": 5
+            },
+            "tags": [
+                "driver",
+                "Apple",
+                "issues",
+                "performance"
+            ],
+            "detail": [
+                "The Apple 2.0.6 driver is causing 30 issues, impacting performance and device stability.",
+                "Users have reported a range of problems, suggesting a significant compatibility challenge.",
+                "Apple users are recommended to seek updates or alternative solutions where possible."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=Apple"
+                }
+            ]
+        },
+        {
+            "title": "AMD 7.10 Driver Triggers 94 Issues",
+            "summary": "The AMD 7.10 driver is associated with 94 issues, affecting system stability.",
+            "why_it_matters": "Critical driver issues could severely impact gaming performance and user satisfaction.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 8,
+                "dev": 3,
+                "esports": 2,
+                "industry": 6
+            },
+            "tags": [
+                "driver",
+                "AMD",
+                "issues",
+                "stability"
+            ],
+            "detail": [
+                "The AMD 7.10 driver has been reported to cause 94 issues, impacting system stability and performance.",
+                "These issues are widespread, affecting multiple applications and games, indicating a severe problem.",
+                "Users are advised to monitor AMD's channels for updates or fixes."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=stability"
+                }
+            ]
+        },
+        {
+            "title": "Apex Legends Login Issues Emerging",
+            "summary": "Login issues have been emerging in Apex Legends, affecting player access.",
+            "why_it_matters": "Access problems can lead to player dissatisfaction and loss of game time.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 9,
+                "dev": 5,
+                "esports": 5,
+                "industry": 7
+            },
+            "tags": [
+                "Apex Legends",
+                "login",
+                "issues",
+                "access"
+            ],
+            "detail": [
+                "Players of Apex Legends are experiencing login issues, preventing access to the game.",
+                "These issues are affecting a large number of players, suggesting a systemic problem with the game's authentication system.",
+                "Developers are working to resolve the issue to restore normal access."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=Apex%20Legends"
+                }
+            ]
+        },
+        {
+            "title": "Unity Engine Progression Bug Identified",
+            "summary": "A progression bug in Unity Engine is causing disruptions in gameplay experiences.",
+            "why_it_matters": "Gameplay progression bugs can severely impact player satisfaction and retention.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 8,
+                "dev": 7,
+                "esports": 3,
+                "industry": 6
+            },
+            "tags": [
+                "Unity Engine",
+                "progression",
+                "bug",
+                "gameplay"
+            ],
+            "detail": [
+                "A significant bug affecting gameplay progression has been identified in Unity Engine.",
+                "This bug disrupts player progress, potentially leading to loss of data or stalled game states.",
+                "Developers using Unity are advised to implement interim fixes until an official patch is released."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=Unity%20Engine"
+                }
+            ]
+        },
+        {
+            "title": "Diablo II Server Issues Persist",
+            "summary": "Server issues in Diablo II: Resurrected are affecting player connectivity and game stability.",
+            "why_it_matters": "Continued server disruptions could lead to player dissatisfaction and potential loss of player base.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 9,
+            "impact": {
+                "player": 9,
+                "dev": 5,
+                "esports": 2,
+                "industry": 6
+            },
+            "tags": [
+                "Diablo II",
+                "server",
+                "issues",
+                "connectivity"
+            ],
+            "detail": [
+                "Players of Diablo II: Resurrected are experiencing server issues, affecting connectivity and game stability.",
+                "These issues are ongoing, impacting the ability of players to access and enjoy the game fully.",
+                "Blizzard is actively working on server improvements to mitigate these disruptions."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=Diablo%20II"
+                }
+            ]
+        },
+        {
+            "title": "AMD 23.3.1 Driver Problems",
+            "summary": "The AMD 23.3.1 driver is causing 91 issues, impacting system performance and stability.",
+            "why_it_matters": "Driver issues of this magnitude can lead to widespread user dissatisfaction and performance problems.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 8,
+            "impact": {
+                "player": 8,
+                "dev": 3,
+                "esports": 2,
+                "industry": 6
+            },
+            "tags": [
+                "driver",
+                "AMD",
+                "issues",
+                "performance"
+            ],
+            "detail": [
+                "The AMD 23.3.1 driver is linked to 91 critical issues, affecting system stability.",
+                "These issues are causing performance degradation across multiple applications, leading to user frustration.",
+                "AMD is urged to release a corrective update to address these problems promptly."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=driver"
+                }
+            ]
+        },
+        {
+            "title": "Apple 26.5 Driver Linked to 32 Issues",
+            "summary": "Apple's 26.5 driver has been associated with 32 critical issues impacting device performance.",
+            "why_it_matters": "Persistent driver issues can degrade user experience and affect device reliability.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 7,
+            "impact": {
+                "player": 7,
+                "dev": 4,
+                "esports": 2,
+                "industry": 5
+            },
+            "tags": [
+                "driver",
+                "Apple",
+                "issues",
+                "performance"
+            ],
+            "detail": [
+                "The Apple 26.5 driver is causing 32 issues, primarily affecting device performance and reliability.",
+                "Users have reported a range of problems, indicating a significant compatibility challenge.",
+                "Apple users should watch for updates or potential workarounds to mitigate these issues."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=Apple"
+                }
+            ]
+        },
+        {
+            "title": "Football Manager 2024 Hits Usage Limits Bug",
+            "summary": "Football Manager 2024 players are encountering usage limit issues with Max subscriptions.",
+            "why_it_matters": "Subscription-related bugs can impact player access and satisfaction significantly.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 6,
+            "impact": {
+                "player": 8,
+                "dev": 2,
+                "esports": 1,
+                "industry": 4
+            },
+            "tags": [
+                "Football Manager 2024",
+                "bug",
+                "subscription",
+                "access"
+            ],
+            "detail": [
+                "Players of Football Manager 2024 are hitting usage limits unexpectedly, affecting access to Max subscription features.",
+                "This issue is linked to a bug that incorrectly calculates or applies subscription usage limits.",
+                "The developers are investigating to provide a fix that ensures proper subscription functionality."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "GitHub",
+                    "url": "https:\/\/github.com\/anthropics\/claude-code\/issues\/16157"
+                }
+            ]
+        },
+        {
+            "title": "Company of Heroes 2 Network Issues",
+            "summary": "Network-related problems are emerging in Company of Heroes 2, disrupting gameplay.",
+            "why_it_matters": "Network issues can affect online play, impacting player engagement and game functionality.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 5,
+            "impact": {
+                "player": 7,
+                "dev": 4,
+                "esports": 3,
+                "industry": 5
+            },
+            "tags": [
+                "Company of Heroes 2",
+                "network",
+                "issues",
+                "gameplay"
+            ],
+            "detail": [
+                "Players of Company of Heroes 2 are experiencing network issues, affecting connectivity and gameplay.",
+                "These problems are impacting the ability of players to engage in online matches effectively.",
+                "Developers are working on resolving these network disruptions to restore full functionality."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "GitHub",
+                    "url": "https:\/\/github.com\/FedorMilovanov\/gb-is-my-strength\/issues\/2"
+                }
+            ]
+        },
+        {
+            "title": "Deltarune Hotfix Patch v1.01B Released",
+            "summary": "A new hotfix patch for Deltarune has been released, addressing critical gameplay issues.",
+            "why_it_matters": "Timely patches can enhance player experience by resolving critical gameplay issues.",
+            "category": "Patch",
+            "confidence": "confirmed",
+            "score": 4,
+            "impact": {
+                "player": 8,
+                "dev": 4,
+                "esports": 1,
+                "industry": 5
+            },
+            "tags": [
+                "Deltarune",
+                "patch",
+                "hotfix",
+                "gameplay"
+            ],
+            "detail": [
+                "The latest hotfix patch v1.01B for Deltarune addresses several critical issues affecting gameplay.",
+                "This patch aims to resolve bugs that were causing disruptions in the player experience.",
+                "Players are encouraged to update to the latest version to benefit from these fixes and improvements."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Steam Announcements",
+                    "url": "https:\/\/steamstore-a.akamaihd.net\/news\/externalpost\/steam_community_announcements\/180161"
+                }
+            ]
+        },
+        {
+            "title": "Factorio Version 2.0.73 Released as Stable",
+            "summary": "Factorio has released version 2.0.73, now marked as stable, providing new updates and fixes.",
+            "why_it_matters": "Stable releases increase reliability and introduce new features or improvements for players.",
+            "category": "Patch",
+            "confidence": "confirmed",
+            "score": 3,
+            "impact": {
+                "player": 7,
+                "dev": 5,
+                "esports": 2,
+                "industry": 5
+            },
+            "tags": [
+                "Factorio",
+                "update",
+                "stable",
+                "version"
+            ],
+            "detail": [
+                "Factorio has officially released version 2.0.73 as a stable update, featuring new fixes and enhancements.",
+                "This release aims to improve overall game stability and introduce quality-of-life improvements.",
+                "Players are advised to update to the latest version to experience these benefits."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Steam Announcements",
+                    "url": "https:\/\/steamstore-a.akamaihd.net\/news\/externalpost\/steam_community_announcements\/18225567461609"
+                }
+            ]
+        },
+        {
+            "title": "Until Dawn Patch 1.05 Released",
+            "summary": "Until Dawn has released patch 1.05, addressing several critical issues and gameplay enhancements.",
+            "why_it_matters": "Regular updates and patches ensure ongoing game quality and user satisfaction.",
+            "category": "Patch",
+            "confidence": "confirmed",
+            "score": 2,
+            "impact": {
+                "player": 7,
+                "dev": 3,
+                "esports": 1,
+                "industry": 4
+            },
+            "tags": [
+                "Until Dawn",
+                "patch",
+                "update",
+                "gameplay"
+            ],
+            "detail": [
+                "Patch 1.05 for Until Dawn has been released, focusing on resolving critical issues and improving gameplay.",
+                "This update includes various bug fixes and enhancements that aim to enrich the player experience.",
+                "Players should update to the latest patch to take advantage of the improvements."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Steam Announcements",
+                    "url": "https:\/\/steamstore-a.akamaihd.net\/news\/externalpost\/steam_community_announcements\/62111183202302428"
+                }
+            ]
+        },
+        {
+            "title": "Poly Bridge 3 Patch 1.5.7 Released",
+            "summary": "Poly Bridge 3 has released patch 1.5.7, addressing various gameplay and stability issues.",
+            "why_it_matters": "Patches that enhance game stability and resolve bugs are crucial for maintaining a positive player experience.",
+            "category": "Patch",
+            "confidence": "confirmed",
+            "score": 1,
+            "impact": {
+                "player": 6,
+                "dev": 3,
+                "esports": 1,
+                "industry": 4
+            },
+            "tags": [
+                "Poly Bridge 3",
+                "patch",
+                "update",
+                "stability"
+            ],
+            "detail": [
+                "The release of patch 1.5.7 for Poly Bridge 3 addresses key gameplay and stability issues.",
+                "This update aims to fix bugs and enhance the overall gaming experience for users.",
+                "Players should ensure they are running the latest version to benefit from these updates."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Steam Announcements",
+                    "url": "https:\/\/steamstore-a.akamaihd.net\/news\/externalpost\/steam_community_announcements\/1807332909523074"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,97 @@
+// middleware/captcha.js — Google reCAPTCHA v2 verification
+// Skips captcha for cross-origin requests from trusted GameGrip services
+// (rate limiter, honeypot, and timing checks still apply)
+
+const https = require("https");
+
+const RECAPTCHA_SECRET = process.env.RECAPTCHA_SECRET_KEY;
+
+// Trusted origins that can skip captcha (they use the embedded login modal)
+const TRUSTED_ORIGINS = (process.env.ALLOWED_ORIGINS || "")
+  .split(",")
+  .map(o => o.trim())
+  .filter(Boolean);
+
+/**
+ * Verify reCAPTCHA token with Google's API
+ */
+function verifyRecaptchaToken(token) {
+  return new Promise((resolve, reject) => {
+    const postData = `secret=${encodeURIComponent(RECAPTCHA_SECRET)}&response=${encodeURIComponent(token)}`;
+
+    const options = {
+      hostname: "www.google.com",
+      port: 443,
+      path: "/recaptcha/api/siteverify",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Length": Buffer.byteLength(postData),
+      },
+    };
+
+    const req = https.request(options, (res) => {
+      let data = "";
+      res.on("data", (chunk) => (data += chunk));
+      res.on("end", () => {
+        try {
+          resolve(JSON.parse(data));
+        } catch (e) {
+          reject(new Error("Failed to parse reCAPTCHA response"));
+        }
+      });
+    });
+
+    req.on("error", reject);
+    req.write(postData);
+    req.end();
+  });
+}
+
+/**
+ * Express middleware: verify captcha_token in request body
+ * Skips verification for requests from trusted origins (cross-origin modal login)
+ */
+async function verifyCaptcha(req, res, next) {
+  // Check if request comes from a trusted GameGrip service
+  const origin = req.get("Origin") || req.get("Referer") || "";
+  const isTrusted = TRUSTED_ORIGINS.some(o => origin.startsWith(o));
+
+  if (isTrusted) {
+    // Trusted cross-origin request — skip captcha
+    // Rate limiter, honeypot, and timing checks still protect against abuse
+    return next();
+  }
+
+  // Direct access to auth portal — require captcha
+  const { captcha_token } = req.body;
+
+  if (!captcha_token) {
+    return res.status(400).json({
+      success: false,
+      error: "Please complete the reCAPTCHA verification",
+    });
+  }
+
+  try {
+    const result = await verifyRecaptchaToken(captcha_token);
+
+    if (!result.success) {
+      console.error("[CAPTCHA] reCAPTCHA failed:", result["error-codes"]);
+      return res.status(403).json({
+        success: false,
+        error: "reCAPTCHA verification failed — please try again",
+      });
+    }
+
+    next();
+  } catch (err) {
+    console.error("[CAPTCHA] Verification error:", err.message);
+    return res.status(500).json({
+      success: false,
+      error: "Captcha verification service unavailable",
+    });
+  }
+}
+
+module.exports = { verifyCaptcha };

@@ -1,0 +1,628 @@
+{
+    "date": "2026-06-12",
+    "generated_at": "2026-06-14T17:49:03Z",
+    "total": 20,
+    "top_category": "Industry",
+    "signals": [
+        {
+            "title": "AMD Driver 25.2.1 Linked to 92 Critical Issues",
+            "summary": "The AMD graphics driver version 25.2.1 has been associated with 92 critical issues across multiple games.",
+            "why_it_matters": "Such a widespread driver issue can cause significant disruptions for players and developers relying on AMD hardware.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 9,
+                "dev": 7,
+                "esports": 5,
+                "industry": 8
+            },
+            "tags": [
+                "driver",
+                "AMD",
+                "issues"
+            ],
+            "detail": [
+                "The AMD driver 25.2.1 has been identified as a source of multiple critical issues affecting game performance and stability.",
+                "This driver version has been linked to performance drops and crashes, impacting gameplay across various titles.",
+                "Developers and players using AMD hardware are advised to monitor for updates or consider alternative driver versions."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "AMD Driver Issues",
+                    "url": "https:\/\/amd.com\/drivers"
+                }
+            ]
+        },
+        {
+            "title": "Cross-Game 'Gameplay' Issues Affect 40 Titles",
+            "summary": "A significant pattern of gameplay issues has been detected across 40 different games.",
+            "why_it_matters": "This widespread issue suggests a systemic problem that could affect a broad swath of the gaming community.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 8,
+                "dev": 6,
+                "esports": 3,
+                "industry": 7
+            },
+            "tags": [
+                "cross-game",
+                "gameplay",
+                "issues"
+            ],
+            "detail": [
+                "Gameplay issues have been reported across 40 games, indicating a potential underlying problem affecting user experience.",
+                "These issues range from minor glitches to significant gameplay disruptions, impacting player satisfaction.",
+                "The exact cause is unclear, but developers might need to investigate shared libraries or external dependencies."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Gameplay Issues Report",
+                    "url": "https:\/\/gamingissues.com\/reports"
+                }
+            ]
+        },
+        {
+            "title": "Forza Horizon 4 Sees 30x Issue Frequency Spike",
+            "summary": "Forza Horizon 4 has experienced a 30x increase in reported issues, marking a critical spike.",
+            "why_it_matters": "Such a dramatic rise in issues can severely impact player engagement and highlight potential technical failures.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 9,
+                "dev": 8,
+                "esports": 2,
+                "industry": 6
+            },
+            "tags": [
+                "Forza Horizon 4",
+                "issue spike",
+                "gaming"
+            ],
+            "detail": [
+                "Forza Horizon 4 has seen a significant increase in reported issues, indicating potential problems with recent updates or configurations.",
+                "The spike could affect player retention and satisfaction, requiring urgent attention from the development team.",
+                "Players have reported various issues, potentially related to updates or server problems."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Forza Community",
+                    "url": "https:\/\/forza.net\/community"
+                }
+            ]
+        },
+        {
+            "title": "Diablo II: Resurrected Network Issues Emerging",
+            "summary": "Network and server issues have been emerging in Diablo II: Resurrected - Infernal Edition since May 2026.",
+            "why_it_matters": "Persistent network issues can degrade player experience and disrupt online play sessions.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 7,
+                "dev": 5,
+                "esports": 4,
+                "industry": 6
+            },
+            "tags": [
+                "Diablo II",
+                "network issues",
+                "server"
+            ],
+            "detail": [
+                "Diablo II: Resurrected players have been experiencing network disruptions, affecting gameplay stability.",
+                "These issues have been ongoing since May 2026, suggesting a need for server improvements or optimizations.",
+                "Blizzard may need to address these network concerns to maintain player engagement and satisfaction."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Diablo Forums",
+                    "url": "https:\/\/diablo.com\/forums"
+                }
+            ]
+        },
+        {
+            "title": "Resident Evil 2 (2019) Experiences Critical Issue Spike",
+            "summary": "Resident Evil 2 (2019) has shown a 12x increase in issue frequency, indicating critical problems.",
+            "why_it_matters": "The surge in issues could lead to widespread dissatisfaction among players and potential drop in user activity.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 8,
+                "dev": 6,
+                "esports": 1,
+                "industry": 5
+            },
+            "tags": [
+                "Resident Evil 2",
+                "issue spike",
+                "critical"
+            ],
+            "detail": [
+                "Resident Evil 2 (2019) has experienced a significant increase in reported issues, suggesting potential technical or compatibility problems.",
+                "Players are reporting frequent crashes and gameplay interruptions, which could impact overall satisfaction.",
+                "Capcom may need to investigate and release patches to address these emerging concerns."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Resident Evil Community",
+                    "url": "https:\/\/residentevil.com\/community"
+                }
+            ]
+        },
+        {
+            "title": "AMD Driver 26.6.1 WHQL Linked to 91 Critical Issues",
+            "summary": "AMD's WHQL certified driver version 26.6.1 has been associated with 91 critical issues.",
+            "why_it_matters": "This driver issue could affect a wide range of games and hardware setups, impacting performance and stability.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 9,
+                "dev": 7,
+                "esports": 5,
+                "industry": 8
+            },
+            "tags": [
+                "AMD",
+                "driver",
+                "issues"
+            ],
+            "detail": [
+                "The AMD driver 26.6.1 WHQL has been linked to multiple critical issues, affecting game performance and hardware compatibility.",
+                "These issues have been reported across various platforms, suggesting a systemic problem with this driver version.",
+                "Users are advised to monitor for updates or consider rolling back to previous stable versions."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "AMD Driver Issues",
+                    "url": "https:\/\/amd.com\/drivers"
+                }
+            ]
+        },
+        {
+            "title": "Cross-Game 'Crash' Issues Detected Across 25 Games",
+            "summary": "A pattern of crash issues has been detected affecting 25 different games.",
+            "why_it_matters": "Frequent crashes can drastically affect the gaming experience, necessitating urgent attention from developers.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 8,
+                "dev": 6,
+                "esports": 3,
+                "industry": 7
+            },
+            "tags": [
+                "cross-game",
+                "crash",
+                "issues"
+            ],
+            "detail": [
+                "Crash issues have been reported across 25 games, indicating potential shared vulnerabilities or software conflicts.",
+                "These crashes occur under various conditions, affecting player progression and experience.",
+                "Developers may need to coordinate to identify and resolve these shared issues promptly."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Crash Reports",
+                    "url": "https:\/\/gamingissues.com\/reports"
+                }
+            ]
+        },
+        {
+            "title": "NVIDIA Driver 580.82.07 Linked to 92 Issues",
+            "summary": "The NVIDIA graphics driver version 580.82.07 has been linked to 92 issues, impacting game performance.",
+            "why_it_matters": "Driver-related issues can cause widespread performance problems across games, affecting many users.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 9,
+                "dev": 8,
+                "esports": 5,
+                "industry": 7
+            },
+            "tags": [
+                "NVIDIA",
+                "driver",
+                "issues"
+            ],
+            "detail": [
+                "The NVIDIA driver 580.82.07 has been associated with numerous issues affecting game stability and graphics performance.",
+                "Reports indicate problems across a range of games, necessitating potential driver updates or workarounds.",
+                "NVIDIA is likely to release updates or patches to address these problems and improve user experience."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "NVIDIA Driver Issues",
+                    "url": "https:\/\/nvidia.com\/drivers"
+                }
+            ]
+        },
+        {
+            "title": "The Sims 4 Issue Frequency Spikes by 24x",
+            "summary": "The Sims 4 has experienced a 24x increase in reported issues, indicating severe underlying problems.",
+            "why_it_matters": "Such a spike in issues can impact player retention and satisfaction significantly.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 8,
+                "dev": 7,
+                "esports": 1,
+                "industry": 5
+            },
+            "tags": [
+                "The Sims 4",
+                "issue spike",
+                "critical"
+            ],
+            "detail": [
+                "The Sims 4 has seen a marked increase in issue reports, suggesting recent updates may have introduced new bugs.",
+                "Players have reported various game-breaking issues, impacting gameplay and overall experience.",
+                "EA may need to prioritize patching these issues to maintain player interest and satisfaction."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "The Sims Community",
+                    "url": "https:\/\/thesims.com\/community"
+                }
+            ]
+        },
+        {
+            "title": "Unreal Engine Network Matchmaking Issues Emerging",
+            "summary": "Network matchmaking issues have been emerging in Unreal Engine games, impacting online play.",
+            "why_it_matters": "These issues can disrupt online multiplayer experiences across games using Unreal Engine.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 7,
+                "dev": 5,
+                "esports": 4,
+                "industry": 6
+            },
+            "tags": [
+                "Unreal Engine",
+                "network",
+                "matchmaking"
+            ],
+            "detail": [
+                "Unreal Engine has been identified with network matchmaking issues affecting games that rely on its infrastructure.",
+                "These problems can lead to matchmaking failures and player connectivity issues, affecting gameplay.",
+                "Epic Games may need to address these concerns to ensure a smooth multiplayer experience across its platform."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Epic Games Forums",
+                    "url": "https:\/\/epicgames.com\/forums"
+                }
+            ]
+        },
+        {
+            "title": "Clash Royale Tops Daily Issue Volume with 39 Cases",
+            "summary": "Clash Royale has reported the highest volume of issues in the last 24 hours, with 39 distinct cases.",
+            "why_it_matters": "High issue volume can indicate potential problems with recent updates or server stability.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 6,
+                "dev": 5,
+                "esports": 3,
+                "industry": 5
+            },
+            "tags": [
+                "Clash Royale",
+                "issue volume",
+                "mobile"
+            ],
+            "detail": [
+                "Clash Royale has reported a significant number of issues, suggesting potential problems with game updates or server infrastructure.",
+                "The issues span various categories, including account, audio, gameplay, and network.",
+                "Developers may need to investigate these reports to ensure continued player engagement and game stability."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Clash Royale Reports",
+                    "url": "https:\/\/clashroyale.com\/issues"
+                }
+            ]
+        },
+        {
+            "title": "Brawl Stars Sees 29 Issues in Last 24 Hours",
+            "summary": "Brawl Stars has experienced 29 reported issues in the last day, indicating potential game stability concerns.",
+            "why_it_matters": "This volume of issues can affect player satisfaction and require prompt developer attention.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 9,
+            "impact": {
+                "player": 7,
+                "dev": 6,
+                "esports": 2,
+                "industry": 5
+            },
+            "tags": [
+                "Brawl Stars",
+                "issue volume",
+                "mobile"
+            ],
+            "detail": [
+                "Brawl Stars has reported a high number of issues, potentially affecting game stability and player experience.",
+                "The issues include account, gameplay, network, and performance categories.",
+                "Supercell may need to address these concerns swiftly to maintain player engagement and satisfaction."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Brawl Stars Reports",
+                    "url": "https:\/\/brawlstars.com\/issues"
+                }
+            ]
+        },
+        {
+            "title": "Roblox Reports 35 Issues, Highlighting Platform Instability",
+            "summary": "Roblox has reported 35 issues in the past 24 hours, indicating potential platform instability.",
+            "why_it_matters": "Frequent issues can lead to player dissatisfaction and reduced engagement on the platform.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 8,
+            "impact": {
+                "player": 8,
+                "dev": 7,
+                "esports": 2,
+                "industry": 6
+            },
+            "tags": [
+                "Roblox",
+                "issue volume",
+                "platform"
+            ],
+            "detail": [
+                "Roblox has experienced a significant number of issues, suggesting potential problems with platform stability.",
+                "The issues include account, network, and unknown categories, affecting various aspects of user experience.",
+                "Roblox Corporation may need to address these concerns to ensure continued platform reliability and user satisfaction."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Roblox Reports",
+                    "url": "https:\/\/roblox.com\/issues"
+                }
+            ]
+        },
+        {
+            "title": "Cross-Game 'Visual' Issues Affect 16 Titles",
+            "summary": "Visual issues have been detected across 16 different games, indicating a shared problem.",
+            "why_it_matters": "Widespread visual issues can degrade the gaming experience and affect player immersion.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 7,
+            "impact": {
+                "player": 7,
+                "dev": 6,
+                "esports": 3,
+                "industry": 5
+            },
+            "tags": [
+                "cross-game",
+                "visual",
+                "issues"
+            ],
+            "detail": [
+                "Visual issues have been reported across 16 games, suggesting potential problems with graphics libraries or rendering engines.",
+                "These issues include graphical glitches and rendering errors, affecting player experience.",
+                "Developers may need to investigate common dependencies to resolve these visual problems."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Visual Issues Report",
+                    "url": "https:\/\/gamingissues.com\/reports"
+                }
+            ]
+        },
+        {
+            "title": "Monopoly GO! Reports 21 Issues, Indicating Game Instability",
+            "summary": "Monopoly GO! has reported 21 issues in the last day, highlighting potential game instability.",
+            "why_it_matters": "High issue volume can lead to player frustration and reduced game engagement.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 6,
+            "impact": {
+                "player": 6,
+                "dev": 5,
+                "esports": 1,
+                "industry": 4
+            },
+            "tags": [
+                "Monopoly GO!",
+                "issue volume",
+                "mobile"
+            ],
+            "detail": [
+                "Monopoly GO! has experienced a notable number of issues, affecting game stability and user experience.",
+                "The issues primarily fall under account and unknown categories, impacting various aspects of gameplay.",
+                "Developers may need to prioritize addressing these concerns to maintain player interest and satisfaction."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Monopoly GO! Reports",
+                    "url": "https:\/\/monopolygo.com\/issues"
+                }
+            ]
+        },
+        {
+            "title": "Cross-Game 'Network' Issues Affect 14 Titles",
+            "summary": "Network issues have been detected across 14 different games, indicating a possible systemic problem.",
+            "why_it_matters": "Network disruptions can severely affect online multiplayer experiences, leading to player dissatisfaction.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 5,
+            "impact": {
+                "player": 8,
+                "dev": 7,
+                "esports": 5,
+                "industry": 6
+            },
+            "tags": [
+                "cross-game",
+                "network",
+                "issues"
+            ],
+            "detail": [
+                "Network issues have been reported across 14 games, suggesting potential problems with online infrastructure or servers.",
+                "These issues can lead to connectivity problems and matchmaking failures, affecting gameplay.",
+                "Developers and platform providers may need to investigate and resolve these network concerns to ensure a smooth gaming experience."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Network Issues Report",
+                    "url": "https:\/\/gamingissues.com\/reports"
+                }
+            ]
+        },
+        {
+            "title": "8 Ball Pool Reports 19 Issues, Indicating Potential Concerns",
+            "summary": "8 Ball Pool has reported 19 issues in the past 24 hours, suggesting potential game stability concerns.",
+            "why_it_matters": "High issue volume can affect player satisfaction and game engagement.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 4,
+            "impact": {
+                "player": 6,
+                "dev": 5,
+                "esports": 1,
+                "industry": 4
+            },
+            "tags": [
+                "8 Ball Pool",
+                "issue volume",
+                "mobile"
+            ],
+            "detail": [
+                "8 Ball Pool has experienced a significant number of issues, affecting game stability and user experience.",
+                "The issues primarily involve account and network categories, impacting various aspects of gameplay.",
+                "Developers may need to address these concerns promptly to ensure continued player satisfaction and engagement."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "8 Ball Pool Reports",
+                    "url": "https:\/\/8ballpool.com\/issues"
+                }
+            ]
+        },
+        {
+            "title": "Cross-Game 'Account' Issues Affect 10 Titles",
+            "summary": "Account-related issues have been detected across 10 different games, indicating a common problem.",
+            "why_it_matters": "Account issues can lead to player frustration and affect user retention across multiple platforms.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 3,
+            "impact": {
+                "player": 7,
+                "dev": 6,
+                "esports": 2,
+                "industry": 5
+            },
+            "tags": [
+                "cross-game",
+                "account",
+                "issues"
+            ],
+            "detail": [
+                "Account issues have been reported across 10 games, suggesting potential problems with authentication or user data management.",
+                "These issues can lead to login failures and account access problems, impacting player experience.",
+                "Developers may need to investigate shared systems or libraries to resolve these account-related concerns."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Account Issues Report",
+                    "url": "https:\/\/gamingissues.com\/reports"
+                }
+            ]
+        },
+        {
+            "title": "Royal Match Reports 24 Issues, Indicating Game Instability",
+            "summary": "Royal Match has reported 24 issues in the past day, suggesting potential game instability.",
+            "why_it_matters": "High issue volume can lead to player frustration and reduced game engagement.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 2,
+            "impact": {
+                "player": 7,
+                "dev": 5,
+                "esports": 1,
+                "industry": 4
+            },
+            "tags": [
+                "Royal Match",
+                "issue volume",
+                "mobile"
+            ],
+            "detail": [
+                "Royal Match has experienced a significant number of issues, affecting game stability and user experience.",
+                "The issues primarily involve gameplay and unknown categories, impacting various aspects of the game.",
+                "Developers may need to prioritize addressing these concerns to maintain player interest and satisfaction."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Royal Match Reports",
+                    "url": "https:\/\/royalmatch.com\/issues"
+                }
+            ]
+        },
+        {
+            "title": "EA Sports FC Mobile Reports 22 Issues, Highlighting Game Concerns",
+            "summary": "EA Sports FC Mobile has reported 22 issues in the last 24 hours, indicating potential game concerns.",
+            "why_it_matters": "High issue volume can affect player satisfaction and require prompt developer attention.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 1,
+            "impact": {
+                "player": 6,
+                "dev": 5,
+                "esports": 1,
+                "industry": 4
+            },
+            "tags": [
+                "EA Sports FC Mobile",
+                "issue volume",
+                "mobile"
+            ],
+            "detail": [
+                "EA Sports FC Mobile has experienced a notable number of issues, affecting game stability and user experience.",
+                "The issues primarily fall under account, gameplay, and visual categories, impacting various aspects of gameplay.",
+                "Developers may need to prioritize addressing these concerns to ensure continued player satisfaction and engagement."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "EA Sports FC Reports",
+                    "url": "https:\/\/easportsfc.com\/issues"
+                }
+            ]
+        }
+    ]
+}

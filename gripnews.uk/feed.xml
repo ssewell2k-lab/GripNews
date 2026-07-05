@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>GripNews — Game Intelligence Feed</title>
+    <link>https://gripnews.uk</link>
+    <description>Daily game intelligence: momentum scores, signals, predictions, and breaking events across 213+ games.</description>
+    <language>en-gb</language>
+    <lastBuildDate>Fri, 03 Jul 2026 07:50:02 +0000</lastBuildDate>
+    <atom:link href="https://gripnews.uk/feed.xml" rel="self" type="application/rss+xml"/>
+    <image>
+      <url>https://gripnews.uk/assets/logo.png</url>
+      <title>GripNews</title>
+      <link>https://gripnews.uk</link>
+    </image>
+
+  </channel>
+</rss>

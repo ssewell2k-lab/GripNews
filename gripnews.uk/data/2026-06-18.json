@@ -1,0 +1,628 @@
+{
+    "date": "2026-06-18",
+    "generated_at": "2026-06-18T21:15:02Z",
+    "total": 20,
+    "top_category": "Industry",
+    "signals": [
+        {
+            "title": "Intel 2.0 Driver Causes Widespread Issues",
+            "summary": "The Intel 2.0 driver has been linked to 71 critical issues, causing significant disruptions.",
+            "why_it_matters": "This driver issue impacts a broad range of users, potentially affecting game performance and stability.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 9,
+                "dev": 5,
+                "esports": 2,
+                "industry": 8
+            },
+            "tags": [
+                "driver_issue",
+                "Intel",
+                "performance"
+            ],
+            "detail": [
+                "Intel's 2.0 driver has been identified as a major source of critical issues across multiple systems.",
+                "Users are reporting significant performance drops and crashes, leading to widespread frustration.",
+                "The issue highlights the importance of robust testing before driver releases."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=driver_issue"
+                }
+            ]
+        },
+        {
+            "title": "Apple 26.5 Driver Affects System Stability",
+            "summary": "The Apple 26.5 driver is linked to 38 critical issues, impacting system stability.",
+            "why_it_matters": "This issue can affect a wide range of Apple device users, disrupting both gaming and non-gaming applications.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 8,
+                "dev": 4,
+                "esports": 1,
+                "industry": 7
+            },
+            "tags": [
+                "driver_issue",
+                "Apple",
+                "stability"
+            ],
+            "detail": [
+                "Apple's latest driver release, 26.5, has caused numerous stability issues across devices.",
+                "With 38 critical issues reported, users are experiencing frequent crashes and performance degradation.",
+                "This highlights ongoing challenges in maintaining compatibility in diverse hardware environments."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=driver_issue"
+                }
+            ]
+        },
+        {
+            "title": "AMD 23.3.1 Driver Faces Critical Issues",
+            "summary": "The AMD 23.3.1 driver is associated with 20 critical issues, impacting gaming performance.",
+            "why_it_matters": "AMD users are facing significant disruptions, affecting game playability and user experience.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 7,
+                "dev": 5,
+                "esports": 3,
+                "industry": 6
+            },
+            "tags": [
+                "driver_issue",
+                "AMD",
+                "performance"
+            ],
+            "detail": [
+                "The AMD 23.3.1 driver has been linked to critical performance issues, affecting users' ability to run games smoothly.",
+                "This has resulted in a surge of complaints about game crashes and stuttering.",
+                "AMD's response and potential fixes are eagerly awaited by the community."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=driver_issue"
+                }
+            ]
+        },
+        {
+            "title": "Unreal Engine Matchmaking Issues Surface",
+            "summary": "Emerging issues in Unreal Engine's matchmaking system have been noted, causing disruptions.",
+            "why_it_matters": "Matchmaking issues can lead to player dissatisfaction and impact multiplayer game experiences.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 6,
+                "dev": 7,
+                "esports": 5,
+                "industry": 5
+            },
+            "tags": [
+                "UnrealEngine",
+                "matchmaking",
+                "network"
+            ],
+            "detail": [
+                "Unreal Engine's matchmaking system is facing critical issues that affect player connectivity in multiplayer games.",
+                "Developers using Unreal Engine for their games may experience increased support requests and player churn.",
+                "Ongoing efforts are required to resolve these issues to stabilize the player base."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=UnrealEngine"
+                }
+            ]
+        },
+        {
+            "title": "Diablo II: Resurrected Server Issues Persist",
+            "summary": "Critical server issues continue to plague Diablo II: Resurrected, affecting player connectivity.",
+            "why_it_matters": "Persistent server issues can significantly affect player engagement and retention.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 8,
+                "dev": 6,
+                "esports": 2,
+                "industry": 7
+            },
+            "tags": [
+                "DiabloII",
+                "server",
+                "network"
+            ],
+            "detail": [
+                "Players of Diablo II: Resurrected are reporting ongoing server issues that disrupt gameplay.",
+                "These issues are critical as they prevent players from accessing the game's online features.",
+                "Blizzard's ability to address these problems will be crucial in maintaining its player base."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=DiabloII"
+                }
+            ]
+        },
+        {
+            "title": "Clash Royale Tops Issue Volume Charts",
+            "summary": "Clash Royale has reported 32 issues in the last 24 hours, indicating a high level of disruption.",
+            "why_it_matters": "High issue volume can indicate deeper systemic problems affecting player satisfaction.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 7,
+                "dev": 5,
+                "esports": 1,
+                "industry": 4
+            },
+            "tags": [
+                "ClashRoyale",
+                "issues",
+                "gameplay"
+            ],
+            "detail": [
+                "Clash Royale has experienced a spike in reported issues, with 32 cases logged in the past day.",
+                "The issues span various categories, with gameplay and visual problems being the most prevalent.",
+                "Developers need to address these to prevent erosion of the game's active player base."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=ClashRoyale"
+                }
+            ]
+        },
+        {
+            "title": "Roblox Faces Account and Crash Issues",
+            "summary": "Roblox has reported 29 issues, primarily related to account management and crashes.",
+            "why_it_matters": "Account and crash issues can severely impact player experience and engagement levels.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 8,
+                "dev": 4,
+                "esports": 1,
+                "industry": 5
+            },
+            "tags": [
+                "Roblox",
+                "account",
+                "crash"
+            ],
+            "detail": [
+                "Roblox users have encountered 29 issues, with account management and crashes being the most frequent.",
+                "These problems can lead to a decrease in user satisfaction and retention if not promptly addressed.",
+                "Roblox's handling of these issues will be critical in maintaining its vast user community."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=Roblox"
+                }
+            ]
+        },
+        {
+            "title": "Brawl Stars Audio and Network Problems",
+            "summary": "Brawl Stars has reported 28 issues, focusing on audio and network-related disruptions.",
+            "why_it_matters": "Audio and network issues can detract from the immersive experience, affecting player satisfaction.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 7,
+                "dev": 5,
+                "esports": 2,
+                "industry": 4
+            },
+            "tags": [
+                "BrawlStars",
+                "audio",
+                "network"
+            ],
+            "detail": [
+                "Brawl Stars players are experiencing issues primarily with audio glitches and network connectivity.",
+                "Such issues can interrupt the game flow and frustrate players, leading to potential churn.",
+                "Timely resolution by the developers will be essential in preserving the game's user base."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=BrawlStars"
+                }
+            ]
+        },
+        {
+            "title": "Monopoly GO! Experiences High Incident Volume",
+            "summary": "Monopoly GO! has logged 31 incidents, with a significant number of crashes reported.",
+            "why_it_matters": "High incident volume and crashes can lead to negative user experiences and impact game ratings.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 6,
+                "dev": 4,
+                "esports": 1,
+                "industry": 4
+            },
+            "tags": [
+                "MonopolyGO",
+                "crash",
+                "incidents"
+            ],
+            "detail": [
+                "Monopoly GO! has seen a surge in incidents, with crashes being a common complaint among players.",
+                "Such issues can significantly detract from the game experience, leading to decreased player engagement.",
+                "Addressing these problems is vital for maintaining player interest and satisfaction."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=MonopolyGO"
+                }
+            ]
+        },
+        {
+            "title": "New Roblox FPS Achieves Viral Success",
+            "summary": "A new FPS in Roblox has gained 4 million players due to impressive graphics and gameplay.",
+            "why_it_matters": "This success shows the potential of user-generated content to achieve mainstream popularity on established platforms.",
+            "category": "Indie",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 9,
+                "dev": 3,
+                "esports": 2,
+                "industry": 5
+            },
+            "tags": [
+                "Roblox",
+                "FPS",
+                "user-generated"
+            ],
+            "detail": [
+                "A new FPS game within Roblox has captivated the community, reaching 4 million players on its first day.",
+                "The game's success is attributed to its realistic graphics and engaging gameplay, setting a benchmark for user-generated content.",
+                "This highlights Roblox's capability as a platform for diverse and high-quality gaming experiences."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=Roblox"
+                }
+            ]
+        },
+        {
+            "title": "GTA 6 Pre-Order Date Announced",
+            "summary": "Rockstar Games has announced the pre-order date for GTA 6, set for June 25.",
+            "why_it_matters": "The announcement is a significant milestone for the gaming community anticipating the next installment in the popular franchise.",
+            "category": "Announcement",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 10,
+                "dev": 6,
+                "esports": 3,
+                "industry": 8
+            },
+            "tags": [
+                "GTA6",
+                "pre-order",
+                "Rockstar"
+            ],
+            "detail": [
+                "Rockstar Games has officially confirmed the pre-order date for Grand Theft Auto 6, generating significant excitement.",
+                "The pre-orders will open on June 25, with the game set to launch later this year.",
+                "This announcement is a major event for the gaming industry, given GTA's vast influence and fanbase."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=GTA6"
+                }
+            ]
+        },
+        {
+            "title": "League of Legends MSI 2026 Talent Lineup Revealed",
+            "summary": "Riot Games has announced the complete talent lineup for the MSI 2026 broadcast.",
+            "why_it_matters": "The announcement underscores Riot's commitment to high-quality esports production, enhancing viewer experience.",
+            "category": "Esports",
+            "confidence": "confirmed",
+            "score": 9,
+            "impact": {
+                "player": 6,
+                "dev": 3,
+                "esports": 8,
+                "industry": 6
+            },
+            "tags": [
+                "LoL",
+                "MSI2026",
+                "broadcast"
+            ],
+            "detail": [
+                "Riot Games has unveiled the talent lineup for the Mid-Season Invitational 2026, including casters, hosts, and analysts.",
+                "This announcement highlights Riot's focus on delivering a premium viewing experience for fans and viewers worldwide.",
+                "The MSI is a critical event in the League of Legends competitive calendar, attracting significant attention from the gaming community."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=LoL"
+                }
+            ]
+        },
+        {
+            "title": "Intel 7.1 Driver Also Triggers Critical Issues",
+            "summary": "The Intel 7.1 driver is linked to 35 critical issues, further complicating system performance.",
+            "why_it_matters": "Multiple Intel driver issues highlight systemic challenges in hardware-software integration.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 8,
+            "impact": {
+                "player": 7,
+                "dev": 5,
+                "esports": 1,
+                "industry": 7
+            },
+            "tags": [
+                "driver_issue",
+                "Intel",
+                "system"
+            ],
+            "detail": [
+                "Intel's 7.1 driver is contributing to a significant number of critical system performance issues.",
+                "Users have reported crashes and performance degradation, adding to the ongoing driver-related challenges.",
+                "These issues underscore the necessity for companies to ensure rigorous testing and compatibility."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=driver_issue"
+                }
+            ]
+        },
+        {
+            "title": "Hunt: Showdown Update 2.8.0.3 Released",
+            "summary": "Hunt: Showdown's latest update 2.8.0.3 is now live, addressing critical network issues.",
+            "why_it_matters": "Patch releases addressing critical issues are crucial for maintaining game balance and player satisfaction.",
+            "category": "Patch",
+            "confidence": "confirmed",
+            "score": 7,
+            "impact": {
+                "player": 6,
+                "dev": 4,
+                "esports": 3,
+                "industry": 4
+            },
+            "tags": [
+                "HuntShowdown",
+                "update",
+                "patch"
+            ],
+            "detail": [
+                "The latest patch for Hunt: Showdown, version 2.8.0.3, has been released to address critical network issues.",
+                "This update aims to improve connectivity and overall game stability, a response to player feedback.",
+                "Maintaining a stable network environment is essential for competitive and casual players alike."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Steam Community",
+                    "url": "https:\/\/steamstore-a.akamaihd.net\/news\/externalpost\/steam_community_announcements\/1835871199300"
+                }
+            ]
+        },
+        {
+            "title": "IEM Cologne Drives Esports Betting Surge",
+            "summary": "IEM Cologne accounted for 63% of all esports betting volume on Kalshi during the week of June 7–13.",
+            "why_it_matters": "This highlights Counter-Strike's ongoing dominance in the esports betting market.",
+            "category": "Esports",
+            "confidence": "confirmed",
+            "score": 6,
+            "impact": {
+                "player": 4,
+                "dev": 2,
+                "esports": 7,
+                "industry": 5
+            },
+            "tags": [
+                "IEMCologne",
+                "esports_betting",
+                "CounterStrike"
+            ],
+            "detail": [
+                "The IEM Cologne event was a major driver of esports betting activity, dominating volume on the Kalshi platform.",
+                "This reflects not only the popularity of Counter-Strike as an esports title but also the growing integration of betting within the esports ecosystem.",
+                "Such trends could influence future sponsorship and investment opportunities in the esports industry."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=IEMCologne"
+                }
+            ]
+        },
+        {
+            "title": "Days Gone Experiences High Issue Volume",
+            "summary": "Days Gone reports 177 issues with a high average PSI, indicating persistent gameplay disruptions.",
+            "why_it_matters": "The volume and severity of issues suggest systemic problems that could affect long-term player engagement.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 5,
+            "impact": {
+                "player": 8,
+                "dev": 6,
+                "esports": 2,
+                "industry": 5
+            },
+            "tags": [
+                "DaysGone",
+                "gameplay",
+                "issues"
+            ],
+            "detail": [
+                "Days Gone has a high number of reported issues, with significant average player severity impact (PSI).",
+                "These issues are primarily gameplay-related, affecting the overall experience and satisfaction of players.",
+                "Addressing the root causes of these problems is crucial for the game's ongoing success and player retention."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=DaysGone"
+                }
+            ]
+        },
+        {
+            "title": "Hades II Patch Enhances Gameplay",
+            "summary": "Hades II's latest patch adds more prophecy conclusions and interactive elements.",
+            "why_it_matters": "Regular updates with new content are key to player engagement and game longevity.",
+            "category": "Patch",
+            "confidence": "confirmed",
+            "score": 4,
+            "impact": {
+                "player": 7,
+                "dev": 4,
+                "esports": 1,
+                "industry": 3
+            },
+            "tags": [
+                "HadesII",
+                "patch",
+                "update"
+            ],
+            "detail": [
+                "The latest patch for Hades II introduces additional prophecy conclusions and interactive features, enhancing the game's narrative depth.",
+                "This update demonstrates the developers' commitment to enriching the player experience through continuous content delivery.",
+                "Such updates are crucial for maintaining player interest and fostering a dedicated community."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=HadesII"
+                }
+            ]
+        },
+        {
+            "title": "Unity Engine Progression Issues Identified",
+            "summary": "Unity Engine is facing critical gameplay progression issues, affecting various projects.",
+            "why_it_matters": "These issues can stall game development, impacting release schedules and developer productivity.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 3,
+            "impact": {
+                "player": 5,
+                "dev": 8,
+                "esports": 2,
+                "industry": 6
+            },
+            "tags": [
+                "UnityEngine",
+                "progression",
+                "gameplay"
+            ],
+            "detail": [
+                "The Unity Engine is reportedly experiencing critical issues related to gameplay progression, impacting various projects.",
+                "These problems can delay game development timelines and increase resource demands on developers.",
+                "Quick resolution is necessary to avoid cascading delays across multiple titles using the engine."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=UnityEngine"
+                }
+            ]
+        },
+        {
+            "title": "Mass Effect 3 Security Patch Released",
+            "summary": "A new security patch for Mass Effect 3 addresses critical vulnerabilities in the game's config files.",
+            "why_it_matters": "Security patches are essential to protect both players and game integrity from potential exploits.",
+            "category": "Patch",
+            "confidence": "confirmed",
+            "score": 2,
+            "impact": {
+                "player": 5,
+                "dev": 6,
+                "esports": 1,
+                "industry": 4
+            },
+            "tags": [
+                "MassEffect3",
+                "security",
+                "patch"
+            ],
+            "detail": [
+                "The latest security patch for Mass Effect 3 resolves critical vulnerabilities that could have been exploited by malicious actors.",
+                "Such updates are vital in maintaining the trust and safety of the game's player base.",
+                "Ensuring secure gaming environments is increasingly important as games continue to integrate online features."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "GitHub",
+                    "url": "https:\/\/github.com\/AgroVestOfficial\/AgroVest-Backend\/issu"
+                }
+            ]
+        },
+        {
+            "title": "New Overwatch Hero Introduces High-Speed Gameplay",
+            "summary": "The new Overwatch hero Shion allows players to create high-speed races, adding a new dimension to the game.",
+            "why_it_matters": "Innovative gameplay modes can rejuvenate interest in established titles and attract new players.",
+            "category": "Announcement",
+            "confidence": "confirmed",
+            "score": 1,
+            "impact": {
+                "player": 8,
+                "dev": 3,
+                "esports": 5,
+                "industry": 6
+            },
+            "tags": [
+                "Overwatch",
+                "hero",
+                "gameplay"
+            ],
+            "detail": [
+                "Overwatch's latest hero, Shion, introduces a new high-speed race mode, reminiscent of Mario Kart.",
+                "This feature is generating excitement and could attract players looking for fresh gameplay experiences.",
+                "Such innovations are crucial in keeping long-running games relevant and engaging for their communities."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "View on GameAi",
+                    "url": "https:\/\/gameai.uk\/search?q=Overwatch"
+                }
+            ]
+        }
+    ]
+}

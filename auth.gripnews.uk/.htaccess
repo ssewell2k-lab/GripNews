@@ -1,0 +1,10 @@
+# Passenger configuration for auth.gripnews.uk
+PassengerAppRoot "/home/gripzcxe/auth.gripnews.uk"
+PassengerAppType node
+PassengerStartupFile app.js
+PassengerNodejs /opt/alt/alt-nodejs18/root/usr/bin/node
+
+# Force HTTPS
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]

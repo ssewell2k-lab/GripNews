@@ -1,0 +1,54 @@
+<?php
+$page_title = $page_title ?? 'GripNews — Gaming Intelligence';
+$page_desc = $page_desc ?? 'Daily gaming intelligence signals. Not just news — insights, trends, and pattern detection powered by JaffaAI.';
+$page_canonical = $page_canonical ?? SITE_URL;
+$og_type = $og_type ?? 'website';
+$nav_active = $nav_active ?? '';
+?><!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><?= e($page_title) ?></title>
+  <meta name="description" content="<?= e($page_desc) ?>">
+  <link rel="canonical" href="<?= e($page_canonical) ?>">
+  
+  <meta property="og:type" content="<?= $og_type ?>">
+  <meta property="og:title" content="<?= e($page_title) ?>">
+  <meta property="og:description" content="<?= e($page_desc) ?>">
+  <meta property="og:url" content="<?= e($page_canonical) ?>">
+  <meta property="og:site_name" content="GripNews">
+  <meta property="og:image" content="<?= SITE_URL ?>/assets/og-image.png">
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<?= e($page_title) ?>">
+  <meta name="twitter:description" content="<?= e($page_desc) ?>">
+  
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/style.css?v=3">
+</head>
+<body>
+  <header>
+    <div class="nav-bar">
+      <a href="/" class="logo"><span class="logo-grip">Grip</span><span class="logo-news">News</span> <span class="logo-pipe">|</span> <span class="logo-signal">SIGNAL</span></a>
+      <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav-links">
+        <a href="/" <?= $nav_active === 'home' ? 'class="active"' : '' ?>>Today</a>
+        <a href="/archive" <?= $nav_active === 'archive' ? 'class="active"' : '' ?>>Archive</a>
+        <div class="nav-dropdown">
+          <a href="#" class="nav-dropdown-trigger" onclick="event.preventDefault();this.parentElement.classList.toggle('open')">Categories <span class="caret">▾</span></a>
+          <div class="nav-dropdown-menu">
+            <?php foreach (get_categories() as $_nav_slug => $_nav_cat): ?>
+              <a href="/<?= $_nav_slug ?>"><?= $_nav_cat['icon'] ?> <?= $_nav_cat['label'] ?></a>
+            <?php endforeach; ?>
+          </div>
+        </div>
+        <a href="/trends" <?= $nav_active === 'trends' ? 'class="active"' : '' ?>>Trends</a>
+        <a href="/weekly" <?= $nav_active === 'weekly' ? 'class="active"' : '' ?>>Weekly</a>
+        <a href="/about" <?= $nav_active === 'about' ? 'class="active"' : '' ?>>About</a>
+      </nav>
+    </div>
+  </header>
+  <main>

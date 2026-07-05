@@ -1,0 +1,63 @@
+// routes/user.js — User profile and token endpoints
+const express = require("express");
+const { pool } = require("../db");
+const { authMiddleware } = require("../middleware/auth");
+
+const router = express.Router();
+
+// GET /user/me — current user profile
+router.get("/me", authMiddleware, async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      "SELECT id, email, display_name, avatar_url, role, email_verified, created_at, last_login FROM users WHERE id = ?",
+      [req.user.userId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({
+      user: rows[0],
+    });
+  } catch (err) {
+    console.error("Profile error:", err);
+    res.status(500).json({ error: "Failed to fetch profile" });
+  }
+});
+
+// GET /user/sessions — active sessions (refresh tokens)
+router.get("/sessions", authMiddleware, async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      `SELECT id, created_at, expires_at, revoked 
+       FROM refresh_tokens 
+       WHERE user_id = ? 
+       ORDER BY created_at DESC`,
+      [req.user.userId]
+    );
+
+    res.json({ sessions: rows });
+  } catch (err) {
+    console.error("Sessions error:", err);
+    res.status(500).json({ error: "Failed to fetch sessions" });
+  }
+});
+
+// DELETE /user/sessions/:id — revoke a specific session
+router.delete("/sessions/:id", authMiddleware, async (req, res) => {
+  try {
+    await pool.query(
+      "UPDATE refresh_tokens SET revoked = 1 WHERE id = ? AND user_id = ?",
+      [req.params.id, req.user.userId]
+    );
+
+    res.json({ success: true, message: "Session revoked" });
+  } catch (err) {
+    console.error("Revoke session error:", err);
+    res.status(500).json({ error: "Failed to revoke session" });
+  }
+});
+
+module.exports = router;
+

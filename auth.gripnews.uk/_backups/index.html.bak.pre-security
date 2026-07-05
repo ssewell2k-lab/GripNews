@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameGrip — Authentication</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="logo">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="#00d4ff"/>
+        <path d="M10 16L14 12L18 16L22 12" stroke="#0B0E17" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M10 20L14 16L18 20L22 16" stroke="#0B0E17" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+      </svg>
+      <span class="logo-text">GameGrip</span>
+    </div>
+    <nav class="nav-links">
+      <a href="https://jaffaai.cc" target="_blank">Platform</a>
+      <a href="https://sandbox.gamegrip.cloud" target="_blank">Sandbox</a>
+      <a href="https://api.gamegrip.cloud" target="_blank">API Docs</a>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-container">
+
+    <!-- Hero / Info (left side on desktop) -->
+    <section class="hero-section">
+      <div class="hero-badge">v0.6.1</div>
+      <h1>Unified Identity<br>for GameGrip</h1>
+      <p class="hero-subtitle">
+        One account. Three services. Zero friction.<br>
+        Secure SSO across the entire GameGrip Protocol.
+      </p>
+
+      <div class="feature-list">
+        <div class="feature">
+          <div class="feature-icon">🔐</div>
+          <div>
+            <strong>JWT Authentication</strong>
+            <span>Stateless, signed, short-lived tokens</span>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🔄</div>
+          <div>
+            <strong>Token Rotation</strong>
+            <span>Automatic refresh with revocation</span>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🛡️</div>
+          <div>
+            <strong>Rate Limited</strong>
+            <span>Protected against brute force</span>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">⚡</div>
+          <div>
+            <strong>Session Management</strong>
+            <span>View and revoke active sessions</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="endpoint-list">
+        <div class="endpoint">
+          <span class="method get">GET</span>
+          <code>/health</code>
+        </div>
+        <div class="endpoint">
+          <span class="method post">POST</span>
+          <code>/auth/register</code>
+        </div>
+        <div class="endpoint">
+          <span class="method post">POST</span>
+          <code>/auth/login</code>
+        </div>
+        <div class="endpoint">
+          <span class="method post">POST</span>
+          <code>/auth/refresh</code>
+        </div>
+        <div class="endpoint">
+          <span class="method post">POST</span>
+          <code>/auth/logout</code>
+        </div>
+        <div class="endpoint">
+          <span class="method get">GET</span>
+          <code>/user/me</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- Auth Card (right side on desktop) -->
+    <section class="auth-card">
+
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button class="tab-btn active" data-tab="login">Sign In</button>
+        <button class="tab-btn" data-tab="register">Create Account</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form active">
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="you@example.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="Min 8 characters" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn-primary">
+          <span class="btn-text">Sign In</span>
+          <span class="btn-loader" style="display:none">
+            <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="30" stroke-dashoffset="10"><animateTransform attributeName="transform" type="rotate" from="0 8 8" to="360 8 8" dur="1s" repeatCount="indefinite"/></circle></svg>
+          </span>
+        </button>
+        <div class="form-error" id="login-error"></div>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" class="auth-form">
+        <div class="form-group">
+          <label for="register-email">Email</label>
+          <input type="email" id="register-email" placeholder="you@example.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="register-password">Password</label>
+          <input type="password" id="register-password" placeholder="Min 8 characters" required autocomplete="new-password">
+          <div class="password-strength" id="password-strength"></div>
+        </div>
+        <div class="form-group">
+          <label for="register-password-confirm">Confirm Password</label>
+          <input type="password" id="register-password-confirm" placeholder="Repeat password" required autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn-primary">
+          <span class="btn-text">Create Account</span>
+          <span class="btn-loader" style="display:none">
+            <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="30" stroke-dashoffset="10"><animateTransform attributeName="transform" type="rotate" from="0 8 8" to="360 8 8" dur="1s" repeatCount="indefinite"/></circle></svg>
+          </span>
+        </button>
+        <div class="form-error" id="register-error"></div>
+        <div class="form-success" id="register-success"></div>
+      </form>
+
+      <!-- Dashboard (shown when logged in) -->
+      <div id="dashboard" class="dashboard" style="display:none">
+        <div class="user-header">
+          <div class="user-avatar">
+            <span id="user-initial">?</span>
+          </div>
+          <div class="user-info">
+            <div class="user-email" id="dashboard-email"></div>
+            <div class="user-meta">Authenticated via GameGrip SSO</div>
+          </div>
+        </div>
+
+        <div class="dashboard-section">
+          <h3>Your Token</h3>
+          <div class="token-display">
+            <code id="token-preview" class="token-code">••••••••</code>
+            <button class="btn-icon" id="btn-show-token" title="Show/Hide">👁</button>
+            <button class="btn-icon" id="btn-copy-token" title="Copy">📋</button>
+          </div>
+          <div class="token-meta">
+            <span id="token-expiry">Expires in —</span>
+            <button class="btn-link" id="btn-refresh">Refresh now</button>
+          </div>
+        </div>
+
+        <div class="dashboard-section">
+          <h3>Active Sessions</h3>
+          <div id="sessions-list" class="sessions-list">
+            <div class="session-item loading">Loading sessions...</div>
+          </div>
+        </div>
+
+        <div class="dashboard-actions">
+          <button class="btn-secondary" id="btn-logout">Sign Out</button>
+          <button class="btn-danger" id="btn-logout-all">Sign Out All Devices</button>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-left">
+      <span>GameGrip Protocol</span>
+      <span class="footer-sep">·</span>
+      <span>v0.6.1</span>
+    </div>
+    <div class="footer-right">
+      <span id="service-status" class="status-dot"></span>
+      <span id="service-status-text">Checking...</span>
+    </div>
+  </footer>
+
+  <script src="/js/portal.js"></script>
+</body>
+</html>

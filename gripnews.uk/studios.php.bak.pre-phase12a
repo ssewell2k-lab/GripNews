@@ -1,0 +1,53 @@
+<?php
+require_once __DIR__ . '/includes/functions.php';
+
+$page_title = 'Game Studios — GripNews Intelligence';
+$page_desc = 'Intelligence profiles for major game studios. Track momentum, issues, and signals across studio portfolios.';
+$page_canonical = SITE_URL . '/studios';
+$nav_active = 'studios';
+
+$api = 'https://gripai.uk/v2';
+$data = @json_decode(@file_get_contents("$api/studios"), true);
+$studios = $data['studios'] ?? [];
+
+require_once __DIR__ . '/includes/header.php';
+?>
+
+  <section class="hero">
+    <h1>🏢 <span style="color:var(--accent)">Studios</span></h1>
+    <p class="hero-sub">Intelligence profiles for <?= count($studios) ?> major game studios. Ranked by average portfolio momentum.</p>
+  </section>
+
+  <section class="trends-section">
+    <div class="trends-inner">
+      <?php if (empty($studios)): ?>
+        <div class="empty-state">
+          <div class="icon">🏢</div>
+          <h2>Studio data loading</h2>
+          <p>Studio profiles update daily. Check back soon.</p>
+        </div>
+      <?php else: ?>
+        <div class="studio-grid">
+          <?php foreach ($studios as $s): ?>
+            <a href="/studio/<?= e($s['slug']) ?>" class="studio-card">
+              <div class="studio-card-header">
+                <h3 class="studio-name"><?= e($s['name']) ?></h3>
+                <span class="studio-momentum score-value score-<?= $s['avg_momentum'] > 30 ? 'high' : ($s['avg_momentum'] > 10 ? 'mid' : 'low') ?>"><?= number_format($s['avg_momentum'], 1) ?></span>
+              </div>
+              <p class="studio-desc"><?= e(mb_strimwidth($s['description'] ?? '', 0, 100, '…')) ?></p>
+              <div class="studio-stats">
+                <span class="studio-stat">🎮 <?= $s['game_count'] ?> game<?= $s['game_count'] !== 1 ? 's' : '' ?></span>
+                <span class="studio-stat">🐛 <?= number_format($s['total_issues']) ?> issues</span>
+                <span class="studio-stat">📡 <?= $s['total_signals'] ?> signals</span>
+              </div>
+              <?php if (!empty($s['games'])): ?>
+                <div class="studio-games-list"><?= e(implode(' • ', array_slice($s['games'], 0, 5))) ?></div>
+              <?php endif; ?>
+            </a>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+    </div>
+  </section>
+
+<?php require_once __DIR__ . '/includes/footer.php'; ?>

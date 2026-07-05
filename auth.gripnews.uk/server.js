@@ -1,0 +1,158 @@
+// server.js — GripAi Auth Service v0.7.0
+const express = require("express");
+const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+require("dotenv").config();
+
+const { pool, healthCheck } = require("./db");
+const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/user");
+
+const app = express();
+
+// ── Static Files (Auth Portal) ────────────────────────────
+app.use(express.static("public"));
+const PORT = process.env.PORT || 3001;
+const NODE_ENV = process.env.NODE_ENV || "development";
+
+// ── Security ──────────────────────────────────────────────
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      scriptSrc: ["'self'"],
+      connectSrc: ["'self'"],
+      imgSrc: ["'self'", "data:"],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+}));
+
+// ── CORS ────────────────────────────────────────────────────
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
+  .split(",")
+  .map(o => o.trim())
+  .filter(Boolean);
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin) || NODE_ENV === "development") {
+      return callback(null, true);
+    }
+    callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
+
+// ── Rate Limiting ─────────────────────────────────────────
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many requests, please try again later." },
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: "Too many auth attempts, please try again later." },
+});
+
+app.use(limiter);
+app.use("/auth/login", authLimiter);
+app.use("/auth/register", authLimiter);
+
+// ── Body Parsing ──────────────────────────────────────────
+app.use(express.json({ limit: "10kb" }));
+app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+
+// ── Request Logging (development) ─────────────────────────
+if (NODE_ENV === "development") {
+  app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+    next();
+  });
+}
+
+// ── Routes ────────────────────────────────────────────────
+app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
+
+// ── Health Check ──────────────────────────────────────────
+app.get("/health", async (req, res) => {
+  const dbHealthy = await healthCheck();
+  res.status(dbHealthy ? 200 : 503).json({
+    status: dbHealthy ? "healthy" : "unhealthy",
+    service: "gripai-auth",
+    timestamp: new Date().toISOString(),
+    database: dbHealthy ? "connected" : "disconnected",
+  });
+});
+
+// ── Root ──────────────────────────────────────────────────
+// index.html is served by express.static("public") above.
+// API status is available at /health for programmatic checks.
+// Fallback only if public/index.html is missing:
+app.get("/", (req, res) => {
+  res.json({
+    service: "GripAi Auth",
+    status: "running",
+  });
+});
+
+// ── 404 Handler ───────────────────────────────────────────
+app.use((req, res) => {
+  res.status(404).json({ error: "Endpoint not found" });
+});
+
+// ── Error Handler ─────────────────────────────────────────
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
+
+  if (err.message === "Not allowed by CORS") {
+    return res.status(403).json({ error: "CORS policy violation" });
+  }
+
+  res.status(err.status || 500).json({
+    error: NODE_ENV === "production" ? "Internal server error" : err.message,
+  });
+});
+
+// ── Graceful Shutdown ─────────────────────────────────────
+process.on("SIGTERM", async () => {
+  console.log("SIGTERM received, shutting down gracefully...");
+  await pool.end();
+  process.exit(0);
+});
+
+process.on("SIGINT", async () => {
+  console.log("SIGINT received, shutting down gracefully...");
+  await pool.end();
+  process.exit(0);
+});
+
+// ── Start ─────────────────────────────────────────────────
+app.listen(PORT, () => {
+  console.log(`\n🚀 GameGrip Auth Service v0.6.1`);
+  console.log(`   Mode: ${NODE_ENV}`);
+  console.log(`   Port: ${PORT}`);
+  console.log(`   Allowed origins: ${allowedOrigins.join(", ") || "all (dev mode)"}`);
+  console.log(`\n   Endpoints:`);
+  console.log(`   POST /auth/register  — Register new user`);
+  console.log(`   POST /auth/login     — Login`);
+  console.log(`   POST /auth/refresh   — Refresh access token`);
+  console.log(`   POST /auth/logout    — Logout (revoke refresh)`);
+  console.log(`   GET  /user/me        — Current user (auth required)`);
+  console.log(`   GET  /user/sessions  — Active sessions (auth required)`);
+  console.log(`   GET  /health         — Health check\n`);
+});
+
+module.exports = app;

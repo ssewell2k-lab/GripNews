@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FBW5B7Y4K5"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag(js, new Date());
+  gtag(config, G-FBW5B7Y4K5);
+</script>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameGrip — Authentication</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <meta name="description" content="GameGrip unified authentication. Sign in to access jaffaAi, Grip Protocol, Sandbox, and the full GameGrip ecosystem.">
+    <link rel="canonical" href="https://auth.gamegrip.cloud/">
+    <meta property="og:title" content="GameGrip — Unified Authentication">
+    <meta property="og:description" content="Sign in to access the GameGrip ecosystem — jaffaAi, Grip Protocol, Sandbox, and more.">
+    <meta property="og:url" content="https://auth.gamegrip.cloud/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://jaffaai.cc/og-image.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="GameGrip Authentication">
+    <meta name="twitter:description" content="Sign in to the GameGrip ecosystem">
+</head>
+<body>
+<!-- Loading Screen -->
+<div id="page-loader">
+  <div class="loader-inner">
+    <div class="loader-ring"></div>
+    <div class="loader-brand">GAME<span>GRIP</span></div>
+  </div>
+</div>
+<style>
+  #page-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: #0B0E17;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+  }
+  #page-loader.fade-out {
+    opacity: 0;
+    visibility: hidden;
+  }
+  .loader-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .loader-ring {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(0, 212, 255, 0.15);
+    border-top-color: #00d4ff;
+    border-radius: 50%;
+    animation: loader-spin 0.8s linear infinite;
+  }
+  @keyframes loader-spin {
+    to { transform: rotate(360deg); }
+  }
+  .loader-brand {
+    font-family: Manrope, -apple-system, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: rgba(255, 255, 255, 0.35);
+  }
+  .loader-brand span {
+    color: #00d4ff;
+  }
+</style>
+<script>
+  (function() {
+    var loader = document.getElementById("page-loader");
+    var maxTime = setTimeout(function() { loader.classList.add("fade-out"); }, 3000);
+    window.addEventListener("load", function() {
+      clearTimeout(maxTime);
+      // Small delay so it doesnt
+      loader.classList.add("fade-out");
+    });
+  })();
+</script>
+<div style="text-align:center;padding:1rem 0 1.5rem;">
+  <a href="https://github.com/SewellHub" target="_blank" style="color:#00d4ff;font-size:0.82rem;text-decoration:none;">GitHub</a>
+  <span style="color:#3a4a5c;margin:0 0.5rem;">·</span>
+  <a href="https://gamegrip.cloud" target="_blank" style="color:#8b9cb6;font-size:0.82rem;text-decoration:none;">GameGrip</a>
+  <span style="color:#3a4a5c;margin:0 0.5rem;">·</span>
+  <a href="https://jaffaai.cc" target="_blank" style="color:#8b9cb6;font-size:0.82rem;text-decoration:none;">jaffaAi</a>
+</div>
+</body>
+</html>

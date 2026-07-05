@@ -1,0 +1,628 @@
+{
+    "date": "2026-06-13",
+    "generated_at": "2026-06-14T17:49:04Z",
+    "total": 20,
+    "top_category": "Industry",
+    "signals": [
+        {
+            "title": "AMD Driver 26.6.1 WHQL Causing Widespread Issues",
+            "summary": "The AMD 26.6.1 WHQL driver is linked to 103 issues across various games, causing critical disruptions.",
+            "why_it_matters": "This driver issue is impacting a large number of players and developers, necessitating immediate attention and potential rollbacks.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 9,
+                "dev": 8,
+                "esports": 4,
+                "industry": 8
+            },
+            "tags": [
+                "driver",
+                "AMD",
+                "performance"
+            ],
+            "detail": [
+                "The latest AMD 26.6.1 WHQL driver has been linked to a significant number of game crashes and performance issues.",
+                "These issues have been reported across multiple platforms, affecting a wide range of titles.",
+                "Developers may need to advise users on temporary workarounds or consider rolling back to previous driver versions."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Driver Reports",
+                    "url": "https:\/\/driverreports.example.com\/amd-26-6-1"
+                }
+            ]
+        },
+        {
+            "title": "Forza Horizon 4 Experiences Major Issue Spike",
+            "summary": "Forza Horizon 4 has seen an issue frequency spike of 30 times the normal rate, indicating severe ongoing problems.",
+            "why_it_matters": "The significant increase in issues may degrade player experience and extend to critical gameplay disruptions.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 7,
+                "dev": 5,
+                "esports": 2,
+                "industry": 6
+            },
+            "tags": [
+                "Forza Horizon 4",
+                "issue spike",
+                "gameplay"
+            ],
+            "detail": [
+                "Forza Horizon 4 has experienced a drastic increase in reported issues, with frequency spiking to 30 times the usual rate.",
+                "This surge is primarily linked to recent updates and compatibility problems with new drivers.",
+                "Players are facing severe performance drops and crashes, prompting calls for urgent patches or rollbacks."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Game Monitoring Site",
+                    "url": "https:\/\/gamemonitoring.example.com\/forza-horizon-4"
+                }
+            ]
+        },
+        {
+            "title": "Cross-Game 'Crash' Pattern Impacting 24 Titles",
+            "summary": "A recurring crash issue has been identified across 24 different games, indicating a possible underlying systemic cause.",
+            "why_it_matters": "This cross-game issue suggests a potential widespread software or hardware problem affecting multiple titles.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 8,
+                "dev": 6,
+                "esports": 4,
+                "industry": 7
+            },
+            "tags": [
+                "crash",
+                "systemic",
+                "multigame"
+            ],
+            "detail": [
+                "A crash pattern has emerged across 24 games, with reports suggesting a potential common cause.",
+                "Initial investigations point towards recent driver updates or underlying system changes.",
+                "Developers are advised to investigate compatibility with recent patches and driver updates to identify the root cause."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Cross-Game Analysis",
+                    "url": "https:\/\/crossgameanalysis.example.com\/crash-patterns"
+                }
+            ]
+        },
+        {
+            "title": "Resident Evil Village Issue Spike Raises Concerns",
+            "summary": "Resident Evil Village is experiencing a 15-fold increase in issue reports, indicating serious player experience problems.",
+            "why_it_matters": "Such a significant rise in issues can drastically affect player retention and satisfaction.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 7,
+                "dev": 5,
+                "esports": 1,
+                "industry": 5
+            },
+            "tags": [
+                "Resident Evil Village",
+                "issue spike",
+                "player experience"
+            ],
+            "detail": [
+                "Resident Evil Village has reported a 15-fold increase in issues, primarily affecting gameplay and stability.",
+                "The spike coincides with recent updates, suggesting potential patch-related regressions.",
+                "Players have reported frequent crashes and performance drops, urging developers to address these swiftly."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Issue Tracker",
+                    "url": "https:\/\/issuetracker.example.com\/resident-evil-village"
+                }
+            ]
+        },
+        {
+            "title": "AMD Driver 23.2.2 Causing Game Crashes",
+            "summary": "The AMD 23.2.2 driver is linked to 91 game-related issues, primarily causing crashes and performance drops.",
+            "why_it_matters": "This driver-related issue is affecting a broad spectrum of games and needs urgent resolution.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 8,
+                "dev": 7,
+                "esports": 3,
+                "industry": 6
+            },
+            "tags": [
+                "AMD",
+                "driver",
+                "crash"
+            ],
+            "detail": [
+                "The AMD 23.2.2 driver is associated with 91 critical issues, mainly causing game crashes and severe performance issues.",
+                "Players across multiple platforms are affected, with many games reporting instability.",
+                "Developers are advised to communicate with AMD for potential fixes or advise users on rollbacks."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Driver Impact Report",
+                    "url": "https:\/\/driverimpact.example.com\/amd-23-2-2"
+                }
+            ]
+        },
+        {
+            "title": "Forza Horizon 5 Severe Issue Frequency Spike",
+            "summary": "Forza Horizon 5 reports a 24-fold increase in issue frequency, impacting gameplay significantly.",
+            "why_it_matters": "Major spikes like this can lead to widespread dissatisfaction and potential loss of player base.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 7,
+                "dev": 5,
+                "esports": 2,
+                "industry": 5
+            },
+            "tags": [
+                "Forza Horizon 5",
+                "issue frequency",
+                "gameplay"
+            ],
+            "detail": [
+                "Forza Horizon 5 is experiencing a severe increase in issue reports, with frequency rising 24 times above normal levels.",
+                "Common issues include performance degradation and crashes, heavily impacting player experience.",
+                "The development team is likely investigating these issues to mitigate player dissatisfaction."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Forza Issue Dashboard",
+                    "url": "https:\/\/forzaissues.example.com\/horizon-5"
+                }
+            ]
+        },
+        {
+            "title": "The Sims 4 Faces Dramatic Issue Spike",
+            "summary": "The Sims 4 has seen a 24-fold increase in issue frequency, significantly affecting gameplay stability.",
+            "why_it_matters": "Substantial increases in issues can degrade user experience and prompt negative community feedback.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 6,
+                "dev": 5,
+                "esports": 1,
+                "industry": 5
+            },
+            "tags": [
+                "The Sims 4",
+                "issue frequency",
+                "stability"
+            ],
+            "detail": [
+                "The Sims 4 has experienced a dramatic issue frequency spike, affecting gameplay stability and user experience.",
+                "This increase is primarily linked to recent updates or compatibility issues with new drivers.",
+                "The development team is urged to investigate and address these issues promptly to prevent further user dissatisfaction."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Sims Issue Tracker",
+                    "url": "https:\/\/simsissues.example.com\/sims-4"
+                }
+            ]
+        },
+        {
+            "title": "Resident Evil 2 (2019) Reports Significant Issue Spike",
+            "summary": "Resident Evil 2 (2019) is experiencing a 12-fold increase in issue reports, affecting game performance.",
+            "why_it_matters": "A sharp rise in issues can lead to decreased player engagement and satisfaction.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 6,
+                "dev": 4,
+                "esports": 1,
+                "industry": 4
+            },
+            "tags": [
+                "Resident Evil 2",
+                "issue spike",
+                "performance"
+            ],
+            "detail": [
+                "Resident Evil 2 (2019) has seen a significant increase in reported issues, with frequency spiking 12 times above normal.",
+                "These issues include performance drops and crashes, likely linked to recent patches or driver updates.",
+                "Developers should prioritize addressing these problems to maintain player engagement."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Resident Evil Reports",
+                    "url": "https:\/\/residentevilreports.example.com\/2-2019"
+                }
+            ]
+        },
+        {
+            "title": "Dead or Alive 4 Issue Frequency Spike",
+            "summary": "Dead or Alive 4 has shown an 18-fold increase in issues, impacting game usability.",
+            "why_it_matters": "Such a spike can disrupt player experience and necessitate urgent developer intervention.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 5,
+                "dev": 4,
+                "esports": 2,
+                "industry": 4
+            },
+            "tags": [
+                "Dead or Alive 4",
+                "issue spike",
+                "usability"
+            ],
+            "detail": [
+                "Dead or Alive 4 is encountering an 18-fold increase in issue frequency, primarily affecting game usability and player experience.",
+                "This surge in issues may be related to compatibility problems with recent hardware or software updates.",
+                "Developers need to address these concerns swiftly to ensure continued player engagement."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "DoA Issue Tracker",
+                    "url": "https:\/\/doaissues.example.com\/doa-4"
+                }
+            ]
+        },
+        {
+            "title": "AMD Driver 23.3.1 Linked to Performance Issues",
+            "summary": "The AMD 23.3.1 driver is associated with 92 reported issues, primarily affecting game performance.",
+            "why_it_matters": "Driver-related performance problems can significantly impact the gaming experience and require prompt attention.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 10,
+            "impact": {
+                "player": 6,
+                "dev": 5,
+                "esports": 3,
+                "industry": 5
+            },
+            "tags": [
+                "AMD",
+                "driver",
+                "performance"
+            ],
+            "detail": [
+                "The AMD 23.3.1 driver has been linked to 92 issues, primarily affecting game performance across various titles.",
+                "These issues include frame rate drops and stuttering, causing a degraded gaming experience.",
+                "Game developers and AMD are encouraged to collaborate on identifying and rectifying these problems."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Driver Performance Analysis",
+                    "url": "https:\/\/driverperformance.example.com\/amd-23-3-1"
+                }
+            ]
+        },
+        {
+            "title": "Emerging Network Issues in Diablo II: Resurrected",
+            "summary": "Diablo II: Resurrected – Infernal Edition is experiencing emerging network issues since May 2026.",
+            "why_it_matters": "Network issues can severely hamper online gameplay, affecting both casual and competitive players.",
+            "category": "Rumor",
+            "confidence": "rumor",
+            "score": 10,
+            "impact": {
+                "player": 5,
+                "dev": 3,
+                "esports": 2,
+                "industry": 3
+            },
+            "tags": [
+                "Diablo II",
+                "network",
+                "issues"
+            ],
+            "detail": [
+                "Since May 2026, Diablo II: Resurrected – Infernal Edition has been facing network issues impacting connectivity and stability.",
+                "Players have reported frequent disconnections and lag, disrupting gameplay.",
+                "The development team is likely exploring solutions to mitigate these emerging network challenges."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Network Issue Reports",
+                    "url": "https:\/\/networkissues.example.com\/diablo-2"
+                }
+            ]
+        },
+        {
+            "title": "AMD Driver 7.10 Linked to Game Crashes",
+            "summary": "The AMD 7.10 driver is linked to 95 issues, predominantly causing game crashes.",
+            "why_it_matters": "Driver-induced crashes can lead to significant disruptions and player frustration, necessitating immediate fixes.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 9,
+            "impact": {
+                "player": 7,
+                "dev": 6,
+                "esports": 3,
+                "industry": 6
+            },
+            "tags": [
+                "AMD",
+                "driver",
+                "crash"
+            ],
+            "detail": [
+                "The AMD 7.10 driver has been associated with 95 critical issues, mainly causing crashes across various games.",
+                "These disruptions are affecting player experience and could result in significant backlash if not addressed.",
+                "Developers and AMD should collaborate to identify the root causes and provide timely solutions."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Driver Crash Analysis",
+                    "url": "https:\/\/drivercrash.example.com\/amd-7-10"
+                }
+            ]
+        },
+        {
+            "title": "Clash Royale Tops Issue Volume with 27 Reports",
+            "summary": "Clash Royale has recorded the highest issue volume in the past 24 hours with 27 reported problems.",
+            "why_it_matters": "High issue volume can indicate underlying systemic problems that may affect game reliability and player satisfaction.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 8,
+            "impact": {
+                "player": 6,
+                "dev": 4,
+                "esports": 2,
+                "industry": 3
+            },
+            "tags": [
+                "Clash Royale",
+                "issue volume",
+                "gameplay"
+            ],
+            "detail": [
+                "Clash Royale has reported the highest number of issues in the past 24 hours, with 27 problems across various categories.",
+                "The issues are diverse, affecting gameplay, audio, and network performance.",
+                "Developers should prioritize identifying and fixing these issues to maintain game stability and player satisfaction."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Issue Volume Tracker",
+                    "url": "https:\/\/issuevolume.example.com\/clash-royale"
+                }
+            ]
+        },
+        {
+            "title": "Brawl Stars Faces High Issue Volume",
+            "summary": "Brawl Stars has reported 18 issues in the last 24 hours, primarily related to network and performance.",
+            "why_it_matters": "Network and performance issues can significantly disrupt player experience, requiring swift developer intervention.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 7,
+            "impact": {
+                "player": 5,
+                "dev": 3,
+                "esports": 2,
+                "industry": 3
+            },
+            "tags": [
+                "Brawl Stars",
+                "network",
+                "performance"
+            ],
+            "detail": [
+                "Brawl Stars has experienced a high issue volume, with 18 reports mainly concerning network and performance problems.",
+                "Players have reported lag and connectivity issues, affecting gameplay quality.",
+                "The development team is advised to address these issues promptly to prevent player frustration."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Network & Performance Reports",
+                    "url": "https:\/\/networkperformance.example.com\/brawl-stars"
+                }
+            ]
+        },
+        {
+            "title": "Royal Match Reports 16 Issues in 24 Hours",
+            "summary": "Royal Match has recorded 16 issues, with a significant portion categorized as gameplay and unknown.",
+            "why_it_matters": "A high number of gameplay-related issues can degrade the player experience and affect game popularity.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 6,
+            "impact": {
+                "player": 5,
+                "dev": 3,
+                "esports": 1,
+                "industry": 2
+            },
+            "tags": [
+                "Royal Match",
+                "gameplay",
+                "issues"
+            ],
+            "detail": [
+                "Royal Match has reported 16 issues in the past day, with many affecting gameplay elements.",
+                "The issues range from minor glitches to more severe gameplay interruptions.",
+                "Developers should investigate these reports to enhance game stability and player satisfaction."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Gameplay Issue Reports",
+                    "url": "https:\/\/gameplayissues.example.com\/royal-match"
+                }
+            ]
+        },
+        {
+            "title": "AMD Driver 24.10.1 Linked to 91 Issues",
+            "summary": "The AMD 24.10.1 driver is associated with 91 issues, causing significant disruptions across numerous games.",
+            "why_it_matters": "Driver-related disruptions can impact a wide range of games, necessitating urgent fixes from developers and AMD.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 5,
+            "impact": {
+                "player": 6,
+                "dev": 5,
+                "esports": 3,
+                "industry": 5
+            },
+            "tags": [
+                "AMD",
+                "driver",
+                "disruptions"
+            ],
+            "detail": [
+                "The AMD 24.10.1 driver has been linked to 91 issues, predominantly causing disruptions and performance issues.",
+                "These problems are affecting a wide array of games, leading to a compromised gaming experience.",
+                "Developers should coordinate with AMD to address these issues and provide updates to affected users."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Driver Disruption Report",
+                    "url": "https:\/\/driverdisruption.example.com\/amd-24-10-1"
+                }
+            ]
+        },
+        {
+            "title": "Roblox General Issue Pattern Active",
+            "summary": "Roblox is currently experiencing a general issue pattern with 290 reported cases, indicating widespread problems.",
+            "why_it_matters": "Persistent issues can lead to decreased player engagement and affect the game's reputation.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 4,
+            "impact": {
+                "player": 7,
+                "dev": 4,
+                "esports": 2,
+                "industry": 3
+            },
+            "tags": [
+                "Roblox",
+                "general issue",
+                "widespread"
+            ],
+            "detail": [
+                "Roblox is experiencing a general issue pattern, with 290 active cases reported.",
+                "The issues are varied, affecting different aspects of the game, from connectivity to gameplay.",
+                "Developers are advised to address these issues to maintain player satisfaction and engagement."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Roblox Issue Tracker",
+                    "url": "https:\/\/robloxissues.example.com"
+                }
+            ]
+        },
+        {
+            "title": "Days Gone Highlighted in Issue Hotspots",
+            "summary": "Days Gone is experiencing high issue activity with 177 reported cases, indicating potential systemic problems.",
+            "why_it_matters": "High issue activity can lead to player dissatisfaction and impact the game's longevity.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 3,
+            "impact": {
+                "player": 6,
+                "dev": 4,
+                "esports": 1,
+                "industry": 3
+            },
+            "tags": [
+                "Days Gone",
+                "issue hotspots",
+                "systemic"
+            ],
+            "detail": [
+                "Days Gone has been identified in issue hotspots, with 177 reported cases indicating systemic problems.",
+                "The issues are diverse, affecting various gameplay elements and player experience.",
+                "Developers are encouraged to investigate and resolve these issues to enhance game stability."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Issue Hotspot Tracker",
+                    "url": "https:\/\/issuehotspots.example.com\/days-gone"
+                }
+            ]
+        },
+        {
+            "title": "Counter-Strike 2 Appears in Issue Hotspots",
+            "summary": "Counter-Strike 2 is experiencing a high volume of issues with 135 cases reported, suggesting significant problems.",
+            "why_it_matters": "Persistent issues can degrade player experience and impact the competitive scene.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 2,
+            "impact": {
+                "player": 6,
+                "dev": 5,
+                "esports": 4,
+                "industry": 4
+            },
+            "tags": [
+                "Counter-Strike 2",
+                "issue hotspots",
+                "competitive"
+            ],
+            "detail": [
+                "Counter-Strike 2 has been identified in issue hotspots, with 135 cases suggesting significant problems.",
+                "Issues range from gameplay glitches to network connectivity problems, affecting player experience.",
+                "The development team is advised to prioritize these issues to maintain competitive integrity."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "CS2 Issue Tracker",
+                    "url": "https:\/\/cs2issues.example.com"
+                }
+            ]
+        },
+        {
+            "title": "Genshin Impact Faces Active Issue Patterns",
+            "summary": "Genshin Impact is experiencing active issue patterns with 251 cases, indicating ongoing technical challenges.",
+            "why_it_matters": "Ongoing issues can affect player retention and the game's reputation in the competitive market.",
+            "category": "Industry",
+            "confidence": "confirmed",
+            "score": 1,
+            "impact": {
+                "player": 6,
+                "dev": 4,
+                "esports": 2,
+                "industry": 3
+            },
+            "tags": [
+                "Genshin Impact",
+                "active issues",
+                "technical challenges"
+            ],
+            "detail": [
+                "Genshin Impact is experiencing an active issue pattern with 251 cases reported, indicating ongoing technical challenges.",
+                "These issues span various aspects of the game, including gameplay and network performance.",
+                "The development team should address these challenges to maintain player engagement and satisfaction."
+            ],
+            "body": "",
+            "sources": [
+                {
+                    "name": "Genshin Impact Issue Tracker",
+                    "url": "https:\/\/genshinimpactissues.example.com"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,173 @@
+# GripNews.uk — Apache/LiteSpeed Configuration
+# =============================================
+
+# Disable directory listing (security)
+Options -Indexes
+
+# Force HTTPS
+RewriteEngine On
+# Blog Admin Panel
+RewriteRule ^blog-admin$ blog-admin.php [QSA,L]
+RewriteRule ^blog-admin/(.*)$ blog-admin.php?$1 [QSA,L]
+
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Force non-www
+RewriteCond %{HTTP_HOST} ^www\.gripnews\.uk [NC]
+RewriteRule ^(.*)$ https://gripnews.uk/$1 [L,R=301]
+
+# ── Security: Lock down /api/ directory ──
+# Block direct access to error_log and raw PHP file
+RewriteRule ^api/error_log$ - [F,L]
+# Block non-POST requests to the publish endpoint
+RewriteCond %{REQUEST_METHOD} !POST
+RewriteRule ^api/publish$ - [F,L]
+
+# Clean URLs — route to PHP files
+# Story pages: /story/2026-06-12/slug → story.php
+RewriteRule ^story/(.+)$ story.php [L,QSA]
+
+# Game intelligence pages: /game/fortnite → game.php?slug=fortnite
+RewriteRule ^game/([a-z0-9\-]+)/?$ game.php?slug=$1 [L,QSA]
+
+# Signals overview page
+RewriteRule ^signals/?$ signals.php [L]
+
+# Category pages
+RewriteRule ^patches$ category.php [L]
+RewriteRule ^industry$ category.php [L]
+RewriteRule ^esports$ category.php [L]
+RewriteRule ^indie$ category.php [L]
+RewriteRule ^releases$ upcoming.php [L]
+RewriteRule ^rumours$ category.php [L]
+
+# Static pages
+RewriteRule ^trends$ trends.php [L]
+RewriteRule ^weekly$ weekly.php [L]
+RewriteRule ^archive$ archive.php [L]
+RewriteRule ^about$ about.php [L]
+RewriteRule ^privacy$ privacy.php [L]
+RewriteRule ^terms$ terms.php [L]
+
+# Phase 7 — Prediction & Authority Layer
+RewriteRule ^watchlist$ watchlist.php [L]
+RewriteRule ^rankings$ rankings.php [L]
+RewriteRule ^studios$ studios.php [L]
+RewriteRule ^studio/([a-z0-9\-]+)/?$ studio.php?slug=$1 [L,QSA]
+# Phase 12A — Public Data Products
+RewriteRule ^competitive$ competitive.php [L]
+RewriteRule ^momentum$ momentum.php [L]
+# Phase 12B — Release Intelligence
+RewriteRule ^upcoming$ upcoming.php [L]
+RewriteRule ^genres$ genres.php [L]
+RewriteRule ^top100$ rankings.php [L]
+# Phase 10 — Knowledge Graph Pages
+RewriteRule ^genre/([a-z0-9\-]+)/?$ genre.php?slug=$1 [L,QSA]
+RewriteRule ^publisher/([a-z0-9\-]+)/?$ publisher.php?slug=$1 [L,QSA]
+RewriteRule ^trend/([a-z0-9\-]+)/?$ trend.php?slug=$1 [L,QSA]
+
+
+# Phase 13 — Grip Protocol API
+RewriteRule ^api/v1/?$ api/v1.php [L,QSA]
+RewriteRule ^api/v1/(.+)$ api/v1.php?_route=$1 [L,QSA]
+# Phase 13 — Developer Portal
+RewriteRule ^developers/?$ developers.php [L]
+
+
+# Blog Sitemap
+RewriteRule ^blog-sitemap\.xml$ blog-sitemap.php [L]
+
+# Phase Migration — Blog (from gameai.uk)
+RewriteRule ^blog/?$ blog.php [L,QSA]
+RewriteRule ^blog/(.+)$ blog.php [L,QSA]
+
+# Phase Migration — Sandbox & Chatbox (from gamegrip.cloud)
+RewriteRule ^sandbox/?$ sandbox.php [L]
+RewriteRule ^chatbox/?$ chatbox.php [L]
+RewriteRule ^drivers/?$ drivers.php [L]
+RewriteRule ^hardware/?$ hardware.php [L]
+RewriteRule ^monitor/?$ monitor.php [L]
+RewriteRule ^overlay/?$ overlay.php [L]
+RewriteRule ^reporter/?$ reporter.php [L]
+
+# Legacy routes → redirect to working pages
+RewriteRule ^dashboard/?$ / [R=302,L]
+RewriteRule ^feed/?$ /signals [R=302,L]
+
+# API endpoint (POST only, auth handled by publish.php)
+RewriteCond %{REQUEST_METHOD} POST
+RewriteRule ^api/publish$ api/publish.php [END]
+
+# Block access to data directory
+<FilesMatch "\.json$">
+  Order Allow,Deny
+  Deny from all
+</FilesMatch>
+
+# Allow assets
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# Security headers
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Gzip
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
+</IfModule>
+
+# Cache static assets
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+</IfModule>
+
+# Block sensitive files
+<FilesMatch "\.(env|log|bak|sql|git)$">
+  Order Allow,Deny
+  Deny from all
+</FilesMatch>
+
+# Block error_log files explicitly
+<Files "error_log">
+  Order Allow,Deny
+  Deny from all
+</Files>
+
+# ── Page Cache Headers (SEO) ──
+<IfModule mod_headers.c>
+  # HTML pages: cache for 10 minutes, revalidate
+  <FilesMatch "\.(php|html)$">
+    Header set Cache-Control "public, max-age=600, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+# ── Compression ──
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json text/xml application/xml
+</IfModule>
+
+# Embed widgets
+RewriteRule ^embed/?$ /embed/index.html [L]
+
+# Accuracy Scorecards
+RewriteRule ^accuracy/?$ /accuracy.php [L]
+
+# Phase 11 — Universal Search
+RewriteRule ^search/?$ search.php [L,QSA]
+
+# Intelligence Graph Explorer
+RewriteRule ^graph/?$ graph.php [L]
+
+# Phase 11 — Signal Detail Page
+RewriteRule ^signal/([0-9]+)/?$ signal.php?id=$1 [L,QSA]

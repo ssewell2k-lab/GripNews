@@ -1,0 +1,77 @@
+<?php
+/**
+ * GripNews.uk — Homepage
+ * Today's Top 10 Gaming Signals
+ */
+require_once __DIR__ . '/includes/functions.php';
+
+$today = date('Y-m-d');
+$all_signals = load_signals($today);
+$meta = load_day_meta($today);
+
+if (empty($all_signals)) {
+    $yesterday = date('Y-m-d', strtotime('-1 day'));
+    $all_signals = load_signals($yesterday);
+    $meta = load_day_meta($yesterday);
+    $display_date = $yesterday;
+} else {
+    $display_date = $today;
+}
+
+$top10 = array_slice($all_signals, 0, 10);
+$rest = array_slice($all_signals, 10);
+$total = count($all_signals);
+
+$page_title = "GripNews — Today's Top 10 Gaming Signals";
+$nav_active = 'home';
+
+require_once __DIR__ . '/includes/header.php';
+?>
+
+  <section class="hero">
+    <div class="hero-date"><?= strtoupper(format_date($display_date, 'l, j F Y')) ?></div>
+    <h1>Today's Top <span class="count">10</span> Signals</h1>
+    <p class="hero-sub">What actually changed in gaming today. Ranked by impact.</p>
+    <?php if ($meta['generated']): ?>
+      <div style="margin-top:12px;"><span class="live-badge"><span class="live-dot"></span> Updated <?= date('H:i', strtotime($meta['generated'])) ?> UTC</span></div>
+    <?php endif; ?>
+  </section>
+
+  <section class="signals">
+    <?php if (empty($top10)): ?>
+      <div class="empty-state">
+        <div class="icon">📡</div>
+        <h2>No signals yet today</h2>
+        <p>The feed is being processed. Check back soon — signals publish daily.</p>
+      </div>
+    <?php else: ?>
+      <?php foreach ($top10 as $i => $signal): ?>
+        <?= render_signal_card($signal, $i + 1, $display_date) ?>
+      <?php endforeach; ?>
+    <?php endif; ?>
+  </section>
+
+  <?php if (!empty($rest)): ?>
+    <section class="signals-more">
+      <div class="more-divider">
+        <span class="more-label">+ <?= count($rest) ?> more signals today</span>
+      </div>
+      <?php foreach ($rest as $i => $signal): ?>
+        <?= render_signal_card($signal, $i + 11, $display_date) ?>
+      <?php endforeach; ?>
+    </section>
+  <?php endif; ?>
+
+  <section class="home-categories">
+    <h2 class="section-title">Browse by Category</h2>
+    <div class="category-grid">
+      <?php foreach (get_categories() as $slug => $cat): ?>
+        <a href="/<?= $slug ?>" class="category-card">
+          <span class="cat-icon"><?= $cat['icon'] ?></span>
+          <span class="cat-name"><?= $cat['label'] ?></span>
+        </a>
+      <?php endforeach; ?>
+    </div>
+  </section>
+
+<?php require_once __DIR__ . '/includes/footer.php'; ?>

@@ -1,0 +1,103 @@
+// middleware/captcha.js — Proof-of-work CAPTCHA (click to verify)
+// Client solves a small hash challenge. No math, no images, no external deps.
+
+const crypto = require("crypto");
+
+// In-memory stores
+const challenges = new Map();  // challengeId → { hash, difficulty, expiresAt }
+const solutions = new Map();   // solutionToken → expiresAt
+
+// Clean up every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [id, data] of challenges) {
+    if (now > data.expiresAt) challenges.delete(id);
+  }
+  for (const [token, exp] of solutions) {
+    if (now > exp) solutions.delete(token);
+  }
+}, 5 * 60 * 1000);
+
+/**
+ * Issue a challenge
+ * GET /auth/captcha → { challengeId, prefix, difficulty }
+ */
+function generateChallenge(req, res) {
+  const challengeId = crypto.randomBytes(16).toString("hex");
+  const prefix = crypto.randomBytes(8).toString("hex");
+  const difficulty = 4; // find a nonce where SHA-256(prefix + nonce) starts with 4 zeros
+
+  challenges.set(challengeId, {
+    prefix,
+    difficulty,
+    expiresAt: Date.now() + 5 * 60 * 1000,
+  });
+
+  res.json({ challengeId, prefix, difficulty });
+}
+
+/**
+ * Verify a solved challenge
+ * POST /auth/captcha/verify → { verified, token }
+ */
+function verifyChallengeSolution(req, res) {
+  const { challengeId, nonce } = req.body;
+
+  if (!challengeId || nonce === undefined) {
+    return res.status(400).json({ verified: false, error: "Missing fields" });
+  }
+
+  const challenge = challenges.get(challengeId);
+  if (!challenge) {
+    return res.status(400).json({ verified: false, error: "Challenge expired" });
+  }
+
+  // One-time use
+  challenges.delete(challengeId);
+
+  if (Date.now() > challenge.expiresAt) {
+    return res.status(400).json({ verified: false, error: "Challenge expired" });
+  }
+
+  // Verify the proof-of-work
+  const hash = crypto.createHash("sha256").update(challenge.prefix + String(nonce)).digest("hex");
+  const target = "0".repeat(challenge.difficulty);
+
+  if (!hash.startsWith(target)) {
+    return res.status(403).json({ verified: false, error: "Invalid proof" });
+  }
+
+  // Issue a one-time verification token (valid 5 min)
+  const token = crypto.randomBytes(24).toString("hex");
+  solutions.set(token, Date.now() + 5 * 60 * 1000);
+
+  res.json({ verified: true, token });
+}
+
+/**
+ * Middleware: verify a captcha_token in the request body
+ */
+function verifyCaptcha(req, res, next) {
+  const { captcha_token } = req.body;
+
+  if (!captcha_token) {
+    return res.status(400).json({ success: false, error: "Verification required — click the verify button" });
+  }
+
+  const expiry = solutions.get(captcha_token);
+
+  if (!expiry) {
+    return res.status(403).json({ success: false, error: "Verification expired — please verify again" });
+  }
+
+  // One-time use
+  solutions.delete(captcha_token);
+
+  if (Date.now() > expiry) {
+    return res.status(403).json({ success: false, error: "Verification expired — please verify again" });
+  }
+
+  next();
+}
+
+module.exports = { generateChallenge, verifyChallengeSolution, verifyCaptcha };

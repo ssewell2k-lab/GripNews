@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8">
+  <meta name="robots" content="noindex, nofollow">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GripAi — Authentication</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="description" content="GripAi unified authentication. Sign in to access jaffaAi, GameAi, Grip Protocol, and the full GripAi ecosystem.">
+
+
+</head>
+<body>
+<!-- Loading Screen -->
+<div id="page-loader">
+  <div class="loader-inner">
+    <div class="loader-ring"></div>
+    <div class="loader-brand">GRIP<span>AI</span></div>
+  </div>
+</div>
+<style>
+  #page-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: #0B0E17;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+  }
+  #page-loader.fade-out {
+    opacity: 0;
+    visibility: hidden;
+  }
+  .loader-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .loader-ring {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(0, 212, 255, 0.15);
+    border-top-color: #00d4ff;
+    border-radius: 50%;
+    animation: loader-spin 0.8s linear infinite;
+  }
+  @keyframes loader-spin {
+    to { transform: rotate(360deg); }
+  }
+  .loader-brand {
+    font-family: Manrope, -apple-system, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: rgba(255, 255, 255, 0.35);
+  }
+  .loader-brand span {
+    color: #00d4ff;
+  }
+
+    .api-keys-section {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .api-key-info { display: flex; flex-direction: column; gap: 0.75rem; }
+    .api-key-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.4rem 0; font-size: 0.85rem;
+    }
+    .api-key-row .label { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .api-key-row .value { font-weight: 600; font-family: 'Fira Code', monospace; }
+    .api-key-row .value.green { color: #00D26A; }
+    .api-key-row .value.purple { color: #845ef7; }
+    .usage-bar-bg {
+      height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px;
+      margin-top: 0.5rem; overflow: hidden;
+    }
+    .usage-bar-fill {
+      height: 100%; border-radius: 3px;
+      background: linear-gradient(90deg, #00D26A, #4dabf7);
+      transition: width 0.5s ease;
+    }
+    .btn-generate-key {
+      width: 100%; padding: 0.6rem; margin-top: 0.5rem;
+      background: linear-gradient(135deg, #e53e3e, #9f44d3);
+      border: none; border-radius: 8px; color: #fff;
+      font-weight: 600; font-size: 0.85rem; cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-generate-key:hover { opacity: 0.85; }
+    .btn-upgrade {
+      display: inline-block; margin-top: 0.75rem; padding: 0.4rem 0.8rem;
+      background: none; border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 6px; color: var(--text-muted); font-size: 0.75rem;
+      text-decoration: none; font-weight: 500; transition: all 0.2s;
+    }
+    .btn-upgrade:hover { border-color: #4dabf7; color: #4dabf7; }
+    .api-badges { display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
+    .api-badge-sm {
+      padding: 0.2rem 0.5rem; font-size: 0.65rem; font-weight: 600;
+      border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .api-badge-sm.game { background: rgba(77,171,247,0.15); color: #4dabf7; }
+    .api-badge-sm.safety { background: rgba(132,94,247,0.15); color: #845ef7; }
+
+
+/* ── Ecosystem Navigation ── */
+.ws-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(11,14,23,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.ws-nav-inner {
+  max-width: 1400px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 1.5rem; height: 56px;
+}
+.ws-nav-brand {
+  display: flex; align-items: center; gap: 0.5rem;
+  text-decoration: none; color: #e8e8f0; font-weight: 700;
+}
+.ws-nav-icon {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, #00d4ff, #845ef7);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 16px; color: #fff;
+}
+.ws-nav-title { font-size: 1rem; letter-spacing: -0.3px; }
+.ws-nav-badge {
+  font-size: 0.55rem; font-weight: 700;
+  padding: 2px 6px; border-radius: 4px;
+  background: rgba(0,212,255,0.12); color: #00d4ff;
+  letter-spacing: 0.5px;
+}
+.ws-nav-links {
+  display: flex; gap: 0.25rem; align-items: center;
+}
+.ws-nav-links a {
+  color: #8b9cb6; font-size: 0.82rem; font-weight: 500;
+  text-decoration: none; padding: 0.4rem 0.65rem;
+  border-radius: 6px; transition: all 0.2s;
+}
+.ws-nav-links a:hover { color: #e8e8f0; background: rgba(255,255,255,0.05); }
+.ws-nav-links a.active { color: #00d4ff; }
+.ws-nav-signin {
+  margin-left: 0.5rem !important;
+  background: rgba(0,212,255,0.1) !important;
+  border: 1px solid rgba(0,212,255,0.2) !important;
+  color: #00d4ff !important;
+  border-radius: 6px !important;
+  padding: 0.35rem 0.75rem !important;
+}
+.ws-nav-signin:hover {
+  background: rgba(0,212,255,0.18) !important;
+}
+.ws-nav-toggle {
+  display: none; flex-direction: column; gap: 4px;
+  background: none; border: none; cursor: pointer; padding: 0.5rem;
+}
+.ws-nav-toggle span {
+  width: 20px; height: 2px; background: #8b9cb6; border-radius: 2px;
+  transition: all 0.3s;
+}
+.ws-nav-backdrop {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99;
+}
+.ws-nav-drawer {
+  display: none; position: fixed; top: 56px; right: 0;
+  width: 280px; bottom: 0; z-index: 100;
+  background: #111628; border-left: 1px solid rgba(255,255,255,0.06);
+  padding: 1rem 0; flex-direction: column;
+  overflow-y: auto;
+}
+.ws-nav-drawer a {
+  color: #8b9cb6; text-decoration: none; padding: 0.75rem 1.5rem;
+  font-size: 0.9rem; font-weight: 500; transition: all 0.2s;
+}
+.ws-nav-drawer a:hover { background: rgba(255,255,255,0.04); color: #e8e8f0; }
+.ws-nav-drawer a.active { color: #00d4ff; }
+
+@media (max-width: 900px) {
+  .ws-nav-links { display: none; }
+  .ws-nav-toggle { display: flex; }
+  .ws-nav-drawer.open { display: flex; }
+  .ws-nav-backdrop.open { display: block; }
+}
+
+</style>
+<script>
+  (function() {
+    var loader = document.getElementById("page-loader");
+    var maxTime = setTimeout(function() { loader.classList.add("fade-out"); }, 3000);
+    window.addEventListener("load", function() {
+      clearTimeout(maxTime);
+      loader.classList.add("fade-out");
+    });
+  })();
+</script>
+
+<!-- Background Effects -->
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<nav class="ws-nav">
+  <div class="ws-nav-inner">
+    <a class="ws-nav-brand" href="https://gripai.uk">
+      <div class="ws-nav-icon">G</div>
+      <span class="ws-nav-title">GameGrip</span>
+      <span class="ws-nav-badge">AUTH</span>
+    </a>
+    <div class="ws-nav-links">
+      <a href="https://gripai.uk">GameAi</a>
+      <a href="https://gripai.uk">GameGrip</a>
+      <a href="https://api.gripai.uk">API</a>
+      <a href="https://gripai.uk/safety">Safety</a>
+      <a href="https://gripai.uk/hardware">Hardware</a>
+      <a href="https://gripai.uk/drivers">Drivers</a>
+      <a href="https://gripai.uk">Sandbox</a>
+      <a href="https://vl.gripnews.uk">Vault</a>
+      <a href="https://auth.gripnews.uk" class="ws-nav-signin active">Sign In</a>
+    </div>
+    <button class="ws-nav-toggle" id="navToggle" onclick="toggleNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="ws-nav-backdrop" id="navBackdrop" onclick="toggleNav()"></div>
+<div class="ws-nav-drawer" id="navDrawer">
+  <a href="https://gripai.uk">GameAi</a>
+  <a href="https://gripai.uk">GameGrip</a>
+  <a href="https://api.gripai.uk">API</a>
+  <a href="https://gripai.uk/safety">Safety</a>
+  <a href="https://gripai.uk/hardware">Hardware</a>
+  <a href="https://gripai.uk/drivers">Drivers</a>
+  <a href="https://gripai.uk">Sandbox</a>
+  <a href="https://vl.gripnews.uk">Vault</a>
+  <a href="https://auth.gripnews.uk" class="active">Sign In</a>
+</div>
+
+<!-- Main Content -->
+<div class="main-container">
+  <!-- Left: Hero -->
+  <div class="hero-section">
+    <div class="hero-badge">🔒 AUTH v0.6.2</div>
+    <h1>One account.<br>Full ecosystem.</h1>
+    <p class="hero-subtitle">
+      Sign in once to access jaffaAi, GameAi, Grip Protocol, the API, and everything in the GripAi ecosystem.
+    </p>
+
+    <div class="feature-list">
+      <div class="feature">
+        <span class="feature-icon">🛡️</span>
+        <div><strong>Secured by GripCaptcha</strong><span>Our own CAPTCHA system — no Google, no tracking</span></div>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">🔑</span>
+        <div><strong>JWT Tokens</strong><span>Short-lived access + rotatable refresh tokens</span></div>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">⚡</span>
+        <div><strong>SSO Ready</strong><span>Sign in once, access everything across the ecosystem</span></div>
+      </div>
+    </div>
+
+    <div class="endpoint-list">
+      <div class="endpoint"><span class="method post">POST</span><code>/auth/login</code></div>
+      <div class="endpoint"><span class="method post">POST</span><code>/auth/register</code></div>
+      <div class="endpoint"><span class="method post">POST</span><code>/auth/refresh</code></div>
+      <div class="endpoint"><span class="method get">GET</span><code>/health</code></div>
+    </div>
+
+    <div style="margin-top:1.5rem;">
+      <span id="service-status" class="status-dot"></span>
+      <span id="service-status-text" style="font-size:0.8rem;color:var(--text-muted);margin-left:0.5rem;">Checking...</span>
+    </div>
+  </div>
+
+  <!-- Right: Auth Card -->
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <button class="tab-btn active" data-tab="login">Sign In</button>
+      <button class="tab-btn" data-tab="register">Create Account</button>
+    </div>
+
+    <!-- Login Form -->
+    <form id="login-form" class="auth-form active" autocomplete="on">
+      <div class="form-group">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" required autocomplete="email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" required autocomplete="current-password" placeholder="••••••••">
+      </div>
+      <!-- Honeypot -->
+      <input type="text" id="login-honeypot" name="website" style="display:none" tabindex="-1" autocomplete="off">
+      <input type="hidden" id="login-form-started" value="">
+      <input type="hidden" id="login-captcha-token" value="">
+
+      <!-- GripCaptcha container -->
+      <div id="login-gripcaptcha" style="margin:1rem 0;"></div>
+
+      <div id="login-error" class="form-error"></div>
+      <button type="submit" class="btn-primary">
+        <span class="btn-text">Sign In</span>
+        <span class="btn-loader" style="display:none;">⋯</span>
+      </button>
+    </form>
+
+    <!-- Register Form -->
+    <form id="register-form" class="auth-form" autocomplete="on">
+      <div class="form-group">
+        <label for="register-email">Email</label>
+        <input type="email" id="register-email" required autocomplete="email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label for="register-password">Password</label>
+        <input type="password" id="register-password" required autocomplete="new-password" placeholder="8+ characters" minlength="8">
+        <div id="password-strength" class="password-strength"></div>
+      </div>
+      <div class="form-group">
+        <label for="register-password-confirm">Confirm Password</label>
+        <input type="password" id="register-password-confirm" required autocomplete="new-password" placeholder="••••••••">
+      </div>
+      <!-- Honeypot -->
+      <input type="text" id="register-honeypot" name="website" style="display:none" tabindex="-1" autocomplete="off">
+      <input type="hidden" id="register-form-started" value="">
+      <input type="hidden" id="register-captcha-token" value="">
+
+      <!-- GripCaptcha container -->
+      <div id="register-gripcaptcha" style="margin:1rem 0;"></div>
+
+      <div id="register-error" class="form-error"></div>
+      <div id="register-success" class="form-success"></div>
+      <button type="submit" class="btn-primary">
+        <span class="btn-text">Create Account</span>
+        <span class="btn-loader" style="display:none;">⋯</span>
+      </button>
+    </form>
+
+    <!-- Dashboard (shown after login) -->
+    <div id="dashboard" style="display:none;">
+      <div class="dashboard-header">
+        <div class="user-avatar" id="user-initial">?</div>
+        <div>
+          <div id="dashboard-email" style="font-weight:600;"></div>
+          <div style="font-size:0.8rem;color:var(--text-muted);">Authenticated</div>
+        </div>
+      </div>
+
+      <div class="token-section">
+        <div class="token-label">
+          <span>Access Token</span>
+          <span id="token-expiry" style="font-size:0.75rem;color:var(--text-muted);"></span>
+        </div>
+        <div class="token-display">
+          <code id="token-preview" class="token-preview">••••••••••••••••••••••••••••••••</code>
+        </div>
+        <div class="token-actions">
+          <button id="btn-show-token" class="btn-small">👁 Show</button>
+          <button id="btn-copy-token" class="btn-small">📋 Copy</button>
+          <button id="btn-refresh" class="btn-small">🔄 Refresh now</button>
+        </div>
+      </div>
+
+      
+      <!-- API Keys Management -->
+      <div class="api-keys-section" id="api-keys-section">
+        <h3 style="font-size:0.9rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem;">
+          🔑 API Keys
+          <span style="font-size:0.7rem;padding:0.15rem 0.5rem;background:rgba(0,210,106,0.15);color:#00D26A;border-radius:4px;font-weight:600;">UNIFIED</span>
+        </h3>
+        <div id="api-key-status" style="padding:0.75rem;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid rgba(255,255,255,0.06);">
+          <div style="color:var(--text-muted);font-size:0.8rem;">Loading API key info...</div>
+        </div>
+      </div>
+
+      <div class="sessions-section">
+        <h3 style="font-size:0.9rem;margin-bottom:0.75rem;">Active Sessions</h3>
+        <div id="sessions-list"></div>
+      </div>
+
+      <div style="margin-top:1.5rem;display:flex;gap:0.75rem;">
+        <button id="btn-logout" class="btn-outline" style="flex:1;">Sign Out</button>
+        <button id="btn-logout-all" class="btn-outline btn-danger" style="flex:1;">Sign Out All</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div style="text-align:center;padding:1rem 0 1.5rem;">
+  <a href="https://github.com/SewellHub" target="_blank" style="color:#00d4ff;font-size:0.82rem;text-decoration:none;">GitHub</a>
+  <span style="color:#3a4a5c;margin:0 0.5rem;">·</span>
+  <a href="https://gripai.uk" target="_blank" style="color:#8b9cb6;font-size:0.82rem;text-decoration:none;">GameAi</a>
+  <span style="color:#3a4a5c;margin:0 0.5rem;">·</span>
+  <a href="https://gripai.uk" target="_blank" style="color:#8b9cb6;font-size:0.82rem;text-decoration:none;">GripAi</a>
+  <span style="color:#3a4a5c;margin:0 0.5rem;">·</span>
+  <a href="https://gripai.uk" target="_blank" style="color:#8b9cb6;font-size:0.82rem;text-decoration:none;">GameGrip</a>
+</div>
+
+<!-- GripCaptcha Widget (replaces Google reCAPTCHA) -->
+<script src="https://cp.gripnews.uk/grip-captcha.js"></script>
+<script src="/js/portal.js"></script>
+
+<script>
+function toggleNav() {
+  document.getElementById('navDrawer').classList.toggle('open');
+  document.getElementById('navBackdrop').classList.toggle('open');
+}
+</script>
+
+</body>
+</html>

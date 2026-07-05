@@ -1,0 +1,28 @@
+# GripAi Vault — vl.gripnews.uk
+User-agent: *
+Allow: /
+Allow: /games/
+Allow: /patches/
+Allow: /hardware/
+Allow: /drivers/
+Allow: /websites/
+Disallow: /api.php
+Disallow: /search
+Disallow: /rate_limit.php
+Disallow: /_setup.php
+Disallow: /upload_og.php
+
+# Block aggressive scrapers
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+Sitemap: https://vl.gripnews.uk/sitemap.xml

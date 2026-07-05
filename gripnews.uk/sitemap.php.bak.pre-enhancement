@@ -1,0 +1,103 @@
+<?php
+/**
+ * GripNews.uk — Dynamic Sitemap
+ */
+header('Content-Type: application/xml; charset=utf-8');
+require_once __DIR__ . '/includes/functions.php';
+echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://gripnews.uk/</loc>
+    <lastmod><?= date('Y-m-d') ?></lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://gripnews.uk/archive</loc>
+    <lastmod><?= date('Y-m-d') ?></lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+<?php foreach (get_categories() as $slug => $cat): ?>
+  <url>
+    <loc>https://gripnews.uk/<?= $slug ?></loc>
+    <lastmod><?= date('Y-m-d') ?></lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+<?php endforeach; ?>
+  <url>
+    <loc>https://gripnews.uk/trends</loc>
+    <lastmod><?= date('Y-m-d') ?></lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gripnews.uk/weekly</loc>
+    <lastmod><?= date('Y-m-d') ?></lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://gripnews.uk/about</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://gripnews.uk/privacy</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://gripnews.uk/terms</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+<?php
+// Game intelligence pages — fetch unique game slugs from v2 API
+$_game_json = @file_get_contents('https://gripai.uk/v2/games/slugs');
+$_game_slugs = $_game_json ? (json_decode($_game_json, true) ?: []) : [];
+// Fallback: hardcoded list of known game slugs
+if (empty($_game_slugs)) {
+  $_game_slugs = ['apex-legends','among-us','brawl-stars','clash-royale','diablo-ii',
+    'ea-sports-fc-24','ea-sports-fc-mobile','fortnite','forza-horizon-4','forza-horizon-5',
+    'gran-turismo-7','mass-effect-3','minecraft','monopoly-go','mount-and-blade-ii',
+    'out-of-the-park-baseball-25','resident-evil-2','roblox','royal-match','ryse-son-of-rome',
+    'simcity-buildit','star-wars-battlefront-ii','star-wars-jedi-survivor','the-sims-4',
+    'titan-quest','1080-snowboarding','8-ball-pool'];
+}
+foreach ($_game_slugs as $gs):
+?>
+  <url>
+    <loc>https://gripnews.uk/game/<?= htmlspecialchars($gs) ?></loc>
+    <lastmod><?= date('Y-m-d') ?></lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+<?php endforeach; ?>
+  <url>
+    <loc>https://gripnews.uk/signals</loc>
+    <lastmod><?= date('Y-m-d') ?></lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+<?php
+$dates = get_available_dates(90);
+foreach ($dates as $date):
+  $signals = load_signals($date);
+  foreach ($signals as $s):
+    $slug = slugify($s['title']);
+?>
+  <url>
+    <loc>https://gripnews.uk/story/<?= $date ?>/<?= $slug ?></loc>
+    <lastmod><?= $date ?></lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.6</priority>
+  </url>
+<?php endforeach; endforeach; ?>
+</urlset>

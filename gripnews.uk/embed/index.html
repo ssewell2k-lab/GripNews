@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GripNews Embeddable Widgets — Powered by Grip Protocol</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;background:#0a0a0a;color:#e6edf3;padding:40px 20px}
+.container{max-width:900px;margin:0 auto}
+h1{font-size:2em;margin-bottom:8px}h1 span{color:#6c63ff}
+.subtitle{color:#8b949e;margin-bottom:40px}
+.widget-section{margin-bottom:48px}
+.widget-section h2{font-size:1.2em;margin-bottom:8px}
+.widget-section p{color:#8b949e;font-size:.9em;margin-bottom:12px}
+.embed-code{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px 16px;font-family:monospace;font-size:.82em;color:#6c63ff;margin-bottom:20px;overflow-x:auto;cursor:pointer;position:relative}
+.embed-code:hover::after{content:"Click to copy";position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:.75em;color:#8b949e}
+.widget-demo{padding:20px;background:#161b22;border-radius:12px;border:1px solid #30363d}
+.back{color:#6c63ff;text-decoration:none;display:inline-block;margin-bottom:16px;font-size:.9em}
+.back:hover{text-decoration:underline}
+.badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:.7em;font-weight:700;letter-spacing:.5px;background:rgba(108,99,255,.12);color:#6c63ff;margin-left:8px}
+.new-badge{background:rgba(255,145,0,.12);color:#ff9100}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="/" class="back">&larr; Back to GripNews</a>
+<h1>&#128230; Embeddable <span>Widgets</span> <span class="badge">Protocol v1</span></h1>
+<p class="subtitle">Drop these onto any website. Free, no API key required. Click any code block to copy.</p>
+
+<div class="widget-section">
+<h2>&#127942; Top 10 Games</h2>
+<p>Shows the top 10 games by momentum score, updated daily.</p>
+<div class="embed-code" onclick="navigator.clipboard.writeText(this.textContent.trim())">&lt;script src="https://gripnews.uk/embed/top10.js"&gt;&lt;/script&gt;</div>
+<div class="widget-demo"><script src="/embed/top10.js"></script></div>
+</div>
+
+<div class="widget-section">
+<h2>&#128200; Trending Games</h2>
+<p>Games with rising momentum right now.</p>
+<div class="embed-code" onclick="navigator.clipboard.writeText(this.textContent.trim())">&lt;script src="https://gripnews.uk/embed/trending.js"&gt;&lt;/script&gt;</div>
+<div class="widget-demo"><script src="/embed/trending.js"></script></div>
+</div>
+
+<div class="widget-section">
+<h2>&#128640; Momentum Movers</h2>
+<p>Biggest momentum changes today.</p>
+<div class="embed-code" onclick="navigator.clipboard.writeText(this.textContent.trim())">&lt;script src="https://gripnews.uk/embed/momentum.js"&gt;&lt;/script&gt;</div>
+<div class="widget-demo"><script src="/embed/momentum.js"></script></div>
+</div>
+
+<div class="widget-section">
+<h2>&#128225; Signal Feed <span class="badge new-badge">NEW</span></h2>
+<p>Live intelligence signals. Optionally filter by category with <code>data-category</code>.</p>
+<div class="embed-code" onclick="navigator.clipboard.writeText(this.textContent.trim())">&lt;script src="https://gripnews.uk/embed/signals.js"&gt;&lt;/script&gt;</div>
+<div class="widget-demo"><script src="/embed/signals.js"></script></div>
+</div>
+
+<div class="widget-section">
+<h2>&#127918; Game Intelligence Card <span class="badge new-badge">NEW</span></h2>
+<p>Per-game card showing signals, impact, and momentum. Set the game with <code>data-game="slug"</code>.</p>
+<div class="embed-code" onclick="navigator.clipboard.writeText(this.textContent.trim())">&lt;script src="https://gripnews.uk/embed/gamecard.js" data-game="fortnite"&gt;&lt;/script&gt;</div>
+<div class="widget-demo"><script src="/embed/gamecard.js" data-game="fortnite"></script></div>
+</div>
+
+<div class="widget-section">
+<h2>&#128640; Release Radar <span class="badge new-badge">NEW</span></h2>
+<p>Upcoming releases ranked by hype index.</p>
+<div class="embed-code" onclick="navigator.clipboard.writeText(this.textContent.trim())">&lt;script src="https://gripnews.uk/embed/releases.js"&gt;&lt;/script&gt;</div>
+<div class="widget-demo"><script src="/embed/releases.js"></script></div>
+</div>
+
+<div style="margin-top:40px;padding:20px;background:#161b22;border:1px solid #30363d;border-radius:12px;text-align:center">
+<p style="font-size:.9em;margin-bottom:8px">Want more? Build with the <strong>Grip Protocol API</strong>.</p>
+<a href="/developers" style="color:#6c63ff;font-weight:600;text-decoration:none">View Developer Docs &rarr;</a>
+</div>
+
+</div>
+</body>
+</html>

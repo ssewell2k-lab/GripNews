@@ -1,0 +1,149 @@
+<?php
+$page_title = $page_title ?? 'GripNews — Gaming Intelligence';
+$page_desc = $page_desc ?? 'Daily gaming intelligence signals — real-time trends, rankings, momentum tracking, and pattern detection across 862+ games. Powered by GripAI.';
+$page_canonical = $page_canonical ?? SITE_URL;
+$og_type = $og_type ?? 'website';
+$nav_active = $nav_active ?? '';
+?><!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-742EVFFD81"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-742EVFFD81');
+</script>
+  <meta name="google-site-verification" content="yAPkUu6sgKnZdbvFxGYHQpwa3dj96FxoBJSE9SGNF2s">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><?= e($page_title) ?></title>
+  <meta name="description" content="<?= e($page_desc) ?>">
+  <link rel="canonical" href="<?= e($page_canonical) ?>">
+  
+  <meta property="og:type" content="<?= $og_type ?>">
+  <meta property="og:title" content="<?= e($page_title) ?>">
+  <meta property="og:description" content="<?= e($page_desc) ?>">
+  <meta property="og:url" content="<?= e($page_canonical) ?>">
+  <meta property="og:site_name" content="GripNews">
+  <meta property="og:image" content="<?= SITE_URL ?>/assets/og-image.png">
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<?= e($page_title) ?>">
+  
+  <?php if ($og_type === 'article'): ?>
+  <meta property="article:published_time" content="<?= e($article_date ?? date('Y-m-d')) ?>">
+  <meta property="article:author" content="GripNews">
+  <meta property="article:section" content="Gaming Intelligence">
+  <?php endif; ?>
+  <meta name="twitter:image" content="<?= SITE_URL ?>/assets/og-image.png">
+  <meta name="twitter:site" content="@GripNews">
+  <meta name="twitter:description" content="<?= e($page_desc) ?>">
+  
+  <?php if (!empty($extra_meta)) echo $extra_meta . "\n"; ?>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/style.css?v=6">
+  <link rel="stylesheet" href="/assets/phase7_styles.css?v=1">
+  <link rel="stylesheet" href="/assets/polish.css?v=2">
+  <link rel="stylesheet" href="/assets/features.css?v=3">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "GripNews",
+    "url": "https://gripnews.uk",
+    "description": "Daily gaming intelligence signals. Not just news — insights, trends, and pattern detection powered by GripAI.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "GripNews",
+      "url": "https://gripnews.uk"
+    }
+  }
+  </script>
+    <link rel="alternate" type="application/rss+xml" title="GripNews RSS Feed" href="/feed.xml">
+  <script src="/assets/features.js?v=2" defer></script>
+<script>
+(function(){var t=localStorage.getItem('gn_theme');if(t)document.documentElement.setAttribute('data-theme',t);else if(window.matchMedia('(prefers-color-scheme:light)').matches)document.documentElement.setAttribute('data-theme','light');})();
+</script>
+</head>
+<body>
+  <header>
+    <div class="nav-bar">
+      <a href="/" class="logo"><span class="logo-grip">Grip</span><span class="logo-news">News</span> <span class="logo-pipe">|</span> <span class="logo-signal">SIGNAL</span></a>
+      <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav-links">
+        <!-- Close button for mobile overlay -->
+        <button class="mob-nav-close" onclick="document.querySelector('.nav-links').classList.remove('open')" aria-label="Close menu">&times;</button>
+
+        <!-- Main links (always visible) -->
+        <a href="/" <?= $nav_active === 'home' ? 'class="active"' : '' ?>>Today</a>
+        <a href="/archive" <?= $nav_active === 'archive' ? 'class="active"' : '' ?>>Archive</a>
+        <a href="/search" <?= $nav_active === 'search' ? 'class="active"' : '' ?> style="display:flex;align-items:center;gap:4px;">&#128269; Search</a>
+
+        <!-- Categories dropdown (works on both desktop & mobile) -->
+        <div class="nav-dropdown">
+          <a href="#" class="nav-dropdown-trigger" onclick="event.preventDefault();this.parentElement.classList.toggle('open')">Categories <span class="caret">&#9662;</span></a>
+          <div class="nav-dropdown-menu">
+            <?php foreach (get_categories() as $_nav_slug => $_nav_cat): ?>
+              <a href="/<?= $_nav_slug ?>"><?= $_nav_cat['icon'] ?> <?= $_nav_cat['label'] ?></a>
+            <?php endforeach; ?>
+          </div>
+        </div>
+
+        <!-- Intelligence group (collapsible on mobile) -->
+        <div class="mob-nav-group">
+          <button class="mob-nav-group-toggle" onclick="this.parentElement.classList.toggle('open')">📊 Intelligence <span class="caret">&#9662;</span></button>
+          <div class="mob-nav-group-links">
+            <a href="/trends" <?= $nav_active === 'trends' ? 'class="active"' : '' ?>>Trends</a>
+            <a href="/weekly" <?= $nav_active === 'weekly' ? 'class="active"' : '' ?>>Weekly</a>
+            <a href="/rankings" <?= $nav_active === 'rankings' ? 'class="active"' : '' ?>>Top 100</a>
+            <a href="/momentum" <?= $nav_active === 'momentum' ? 'class="active"' : '' ?>>Momentum</a>
+            <a href="/competitive" <?= $nav_active === 'competitive' ? 'class="active"' : '' ?>>⚔️ Competitive</a>
+            <a href="/sandbox" <?= $nav_active === 'sandbox' ? 'class="active"' : '' ?>>🐛 Bug Tracker</a>
+            <a href="/chatbox" <?= $nav_active === 'chatbox' ? 'class="active"' : '' ?>>💬 Community Buzz</a>
+            <a href="https://gripai.uk/shield" target="_blank">🛡️ Shield</a>
+      <a href="/blog" <?= $nav_active === 'blog' ? 'class="active"' : '' ?>>📰 Blog</a>
+          </div>
+        </div>
+
+        <!-- Discover group (collapsible on mobile) -->
+        <div class="mob-nav-group">
+          <button class="mob-nav-group-toggle" onclick="this.parentElement.classList.toggle('open')">🔍 Discover <span class="caret">&#9662;</span></button>
+          <div class="mob-nav-group-links">
+            <a href="/studios" <?= $nav_active === 'studios' ? 'class="active"' : '' ?>>Studios</a>
+            <a href="/genres" <?= $nav_active === 'genres' ? 'class="active"' : '' ?>>Genres</a>
+            <a href="/watchlist" <?= $nav_active === 'watchlist' ? 'class="active"' : '' ?>>Watchlist</a>
+            <a href="/upcoming" <?= $nav_active === 'upcoming' ? 'class="active"' : '' ?>>🚀 Upcoming</a>
+            <a href="/graph" class="<?= $nav_active==='graph' ? 'active' : '' ?>">🕸️ Graph</a>
+          </div>
+        </div>
+
+        <!-- Info group (collapsible on mobile) -->
+        <div class="mob-nav-group">
+          <button class="mob-nav-group-toggle" onclick="this.parentElement.classList.toggle('open')">ℹ️ Info <span class="caret">&#9662;</span></button>
+          <div class="mob-nav-group-links">
+            <a href="/about" <?= $nav_active === 'about' ? 'class="active"' : '' ?>>About</a>
+            <a href="/accuracy" <?= $nav_active === 'accuracy' ? 'class="active"' : '' ?>>🎯 Accuracy</a>
+          </div>
+        </div>
+
+        <!-- More dropdown -->
+        <div class="nav-dropdown">
+          <a href="#" class="nav-dropdown-trigger" onclick="event.preventDefault();this.parentElement.classList.toggle('open')">More <span class="caret">&#9662;</span></a>
+          <div class="nav-dropdown-menu">
+<a href="https://gripai.uk" target="_blank">&#129302; GripAI</a>
+<a href="https://vl.gripnews.uk" target="_blank">&#128274; Vault</a>
+<a href="https://gripai.uk/shield" target="_blank">&#128737; Shield</a>
+<a href="/sandbox">&#128027; Bug Tracker</a>
+<a href="/chatbox">&#128172; Community Buzz</a>
+          <a href="/blog">&#128240; Blog</a>
+</div>
+        </div>
+      </nav>
+    </div>
+  </header>
+  <main>

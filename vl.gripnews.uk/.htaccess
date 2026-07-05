@@ -1,0 +1,64 @@
+# Force HTTPS Redirect - Added by Viktor
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Block internal files
+RewriteRule ^_setup\.php$ - [F,L]
+RewriteRule ^rate_limit\.php$ - [F,L]
+RewriteRule ^wiki\.php$ - [F,L]
+RewriteRule ^sitemap\.php$ - [F,L]
+
+# Static files
+RewriteRule ^robots\.txt$ - [L]
+RewriteRule ^og-image\.png$ - [L]
+
+# Dynamic sitemap
+RewriteRule ^sitemap\.xml$ sitemap.php [L]
+
+# API — internal use only
+RewriteRule ^api\.php - [L]
+
+# Wiki routes
+RewriteRule ^games/?$ wiki.php?wiki_path=games [QSA,L]
+RewriteRule ^games/([a-z0-9-]+)/?$ wiki.php?wiki_path=games/$1 [QSA,L]
+RewriteRule ^patches/?$ wiki.php?wiki_path=patches [QSA,L]
+RewriteRule ^patches/([a-z0-9-]+)/?$ wiki.php?wiki_path=patches/$1 [QSA,L]
+RewriteRule ^hardware/?$ wiki.php?wiki_path=hardware [QSA,L]
+RewriteRule ^hardware/([a-z0-9-]+)/?$ wiki.php?wiki_path=hardware/$1 [QSA,L]
+RewriteRule ^drivers/?$ wiki.php?wiki_path=drivers [QSA,L]
+RewriteRule ^drivers/([a-z0-9-]+)/?$ wiki.php?wiki_path=drivers/$1 [QSA,L]
+RewriteRule ^websites/?$ wiki.php?wiki_path=websites [QSA,L]
+RewriteRule ^websites/([a-z0-9-]+)/?$ wiki.php?wiki_path=websites/$1 [QSA,L]
+RewriteRule ^search/?$ wiki.php?wiki_path=search [QSA,L]
+
+# Catch-all: anything else -> 404 via wiki
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)$ wiki.php?wiki_path=$1 [QSA,L]
+
+# Deny directory listing
+Options -Indexes
+
+# Security + CORS headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Headers "X-Vault-Key, Content-Type"
+    Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+</IfModule>
+
+# Cache static assets
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/html "access plus 10 minutes"
+    ExpiresByType image/png "access plus 7 days"
+    ExpiresByType application/xml "access plus 1 hour"
+</IfModule>
+
+# Gzip
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json application/xml
+</IfModule>

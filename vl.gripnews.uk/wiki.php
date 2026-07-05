@@ -1,0 +1,1242 @@
+<?php
+/**
+ * GripAi Vault — vl.gripnews.uk
+ * 
+ * The entire public-facing site. All routes:
+ *   /                    → Wiki homepage (stats + featured games)
+ *   /games               → All games index
+ *   /games/{slug}        → Individual game wiki page
+ *   /patches             → Patch notes timeline
+ *   /patches/{slug}      → Patches for a specific game → redirects to /games/{slug}
+ *   /search?q=...        → Search results
+ */
+
+// ── DB Connection ──
+$DB_HOST = 'localhost';
+$DB_NAME = 'gripzcxe_vault';
+$DB_USER = 'gripzcxe_admin';
+$DB_PASS = 'REDACTED_DB_PASSWORD';
+
+function wiki_db() {
+    global $DB_HOST, $DB_NAME, $DB_USER, $DB_PASS;
+    static $pdo = null;
+    if (!$pdo) {
+        $pdo = new PDO(
+            "mysql:host=$DB_HOST;dbname=$DB_NAME;charset=utf8mb4",
+            $DB_USER, $DB_PASS,
+            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
+        );
+    }
+    return $pdo;
+}
+
+// ── Helpers ──
+function to_slug($name) {
+    $slug = strtolower(trim($name));
+    $slug = preg_replace('/[^a-z0-9\s-]/', '', $slug);
+    $slug = preg_replace('/[\s-]+/', '-', $slug);
+    return trim($slug, '-');
+}
+
+function game_from_slug($slug) {
+    $pdo = wiki_db();
+    $stmt = $pdo->prepare("SELECT DISTINCT game_name FROM issues WHERE game_name != '' UNION SELECT DISTINCT game_name FROM patch_notes WHERE game_name != ''");
+    $stmt->execute();
+    foreach ($stmt->fetchAll(PDO::FETCH_COLUMN) as $name) {
+        if (to_slug($name) === $slug) return $name;
+    }
+    return null;
+}
+
+function safe($str) { return htmlspecialchars($str ?? '', ENT_QUOTES, 'UTF-8'); }
+function format_date($d) { return $d ? date('j M Y', strtotime($d)) : '—'; }
+function parse_json_field($val) { if (!$val) return []; $a = json_decode($val, true); return is_array($a) ? $a : []; }
+
+function severity_label($sev) {
+    $sev = (float)$sev;
+    if ($sev >= 0.8) return ['Critical', '#ef4444'];
+    if ($sev >= 0.6) return ['High', '#f97316'];
+    if ($sev >= 0.4) return ['Medium', '#eab308'];
+    if ($sev >= 0.2) return ['Low', '#22c55e'];
+    return ['Info', '#6b7280'];
+}
+
+function severity_hw_label($sev) {
+    $s = strtolower($sev ?? '');
+    if ($s === 'critical') return ['Critical', '#ef4444'];
+    if ($s === 'major') return ['Major', '#f97316'];
+    if ($s === 'minor') return ['Minor', '#eab308'];
+    return ['Info', '#6b7280'];
+}
+
+// ── VPS API (hardware, drivers) with file caching ──
+function vps_api($path, $ttl = 1800) {
+    $cache_dir = sys_get_temp_dir() . '/wiki_cache';
+    if (!is_dir($cache_dir)) @mkdir($cache_dir, 0755, true);
+    $cache_file = $cache_dir . '/' . md5($path) . '.json';
+    
+    if (file_exists($cache_file) && (time() - filemtime($cache_file)) < $ttl) {
+        $cached = file_get_contents($cache_file);
+        $data = json_decode($cached, true);
+        if ($data !== null) return $data;
+    }
+    
+    $ctx = stream_context_create([
+        'http' => ['timeout' => 10, 'header' => "User-Agent: GripAi-Wiki/1.0\r\n"],
+        'ssl' => ['verify_peer' => false, 'verify_peer_name' => false]
+    ]);
+    $url = 'https://gripai.uk' . $path;
+    $body = @file_get_contents($url, false, $ctx);
+    if ($body === false) return null;
+    $data = json_decode($body, true);
+    if ($data !== null) @file_put_contents($cache_file, $body);
+    return $data;
+}
+
+// ── Data queries ──
+function get_wiki_stats() {
+    $pdo = wiki_db();
+    $ig = $pdo->query("SELECT COUNT(DISTINCT game_name) FROM issues WHERE game_name != ''")->fetchColumn();
+    $pg = $pdo->query("SELECT COUNT(DISTINCT game_name) FROM patch_notes WHERE game_name != ''")->fetchColumn();
+    $issues = $pdo->query("SELECT COUNT(*) FROM issues")->fetchColumn();
+    $patches = $pdo->query("SELECT COUNT(*) FROM patch_notes")->fetchColumn();
+    $clusters = $pdo->query("SELECT COUNT(*) FROM clusters")->fetchColumn();
+    // Rough unique game count (close enough, avoids subquery issues)
+    $all_games = [];
+    foreach ($pdo->query("SELECT DISTINCT game_name FROM issues WHERE game_name != ''")->fetchAll(PDO::FETCH_COLUMN) as $g) $all_games[$g] = 1;
+    foreach ($pdo->query("SELECT DISTINCT game_name FROM patch_notes WHERE game_name != ''")->fetchAll(PDO::FETCH_COLUMN) as $g) $all_games[$g] = 1;
+    $games = count($all_games);
+    return ['games' => $games, 'issues' => $issues, 'patches' => $patches, 'clusters' => $clusters];
+}
+
+function get_all_games() {
+    $pdo = wiki_db();
+    return $pdo->query("
+        SELECT game_name, SUM(issue_count) as issues, SUM(patch_count) as patches
+        FROM (
+            SELECT game_name, COUNT(*) as issue_count, 0 as patch_count FROM issues WHERE game_name != '' GROUP BY game_name
+            UNION ALL
+            SELECT game_name, 0, COUNT(*) FROM patch_notes WHERE game_name != '' GROUP BY game_name
+        ) combined
+        GROUP BY game_name ORDER BY game_name ASC
+    ")->fetchAll();
+}
+
+function get_top_games($limit = 12) {
+    $pdo = wiki_db();
+    $games = [];
+    foreach (wiki_db()->query("SELECT game_name, COUNT(*) as cnt FROM issues WHERE game_name != '' GROUP BY game_name")->fetchAll() as $r) {
+        $games[$r['game_name']] = ($games[$r['game_name']] ?? 0) + $r['cnt'];
+    }
+    foreach (wiki_db()->query("SELECT game_name, COUNT(*) as cnt FROM patch_notes WHERE game_name != '' GROUP BY game_name")->fetchAll() as $r) {
+        $games[$r['game_name']] = ($games[$r['game_name']] ?? 0) + $r['cnt'];
+    }
+    arsort($games);
+    $result = [];
+    foreach (array_slice($games, 0, $limit, true) as $name => $total) {
+        $result[] = ['game_name' => $name, 'total' => $total];
+    }
+    return $result;
+}
+
+function get_recent_patches($limit = 8) {
+    $pdo = wiki_db();
+    $limit = (int)$limit;
+    return $pdo->query("SELECT game_name, title, version, release_date FROM patch_notes ORDER BY release_date DESC LIMIT $limit")->fetchAll();
+}
+
+function get_game_issues($game_name) {
+    $pdo = wiki_db();
+    $stmt = $pdo->prepare("SELECT id, summary, category, severity, confidence, certainty, state, source, created_at, enriched_at, raw_text FROM issues WHERE game_name = ? ORDER BY severity DESC, created_at DESC");
+    $stmt->execute([$game_name]);
+    return $stmt->fetchAll();
+}
+
+function get_game_patches($game_name) {
+    $pdo = wiki_db();
+    $stmt = $pdo->prepare("SELECT id, title, version, source, source_url, release_date, bug_fixes, new_features, balance_changes, known_issues, affected_systems FROM patch_notes WHERE game_name = ? ORDER BY release_date DESC");
+    $stmt->execute([$game_name]);
+    return $stmt->fetchAll();
+}
+
+function get_game_clusters($game_name) {
+    $pdo = wiki_db();
+    // Match clusters that belong to this game — check for exact game name in label
+    $stmt = $pdo->prepare("SELECT id, label, category, status, issue_count, confidence, known_fixes, common_causes, created_at, last_report_at FROM clusters WHERE label LIKE ? ORDER BY issue_count DESC, created_at DESC LIMIT 30");
+    $stmt->execute([$game_name . '%']);
+    return $stmt->fetchAll();
+}
+
+function get_game_evidence($game_name) {
+    $pdo = wiki_db();
+    $stmt = $pdo->prepare("SELECT e.id, e.type, e.source, e.content, e.quality, e.trust_score, e.created_at FROM evidence e JOIN issues i ON e.issue_id = i.id WHERE i.game_name = ? ORDER BY e.trust_score DESC LIMIT 20");
+    $stmt->execute([$game_name]);
+    return $stmt->fetchAll();
+}
+
+function get_all_patches_paged($page = 1, $per_page = 50) {
+    $pdo = wiki_db();
+    $offset = (int)(($page - 1) * $per_page);
+    $per_page = (int)$per_page;
+    $total = $pdo->query("SELECT COUNT(*) FROM patch_notes")->fetchColumn();
+    $rows = $pdo->query("SELECT id, game_name, title, version, source, source_url, release_date, bug_fixes, new_features FROM patch_notes ORDER BY release_date DESC LIMIT $per_page OFFSET $offset")->fetchAll();
+    return ['rows' => $rows, 'total' => $total, 'page' => $page, 'pages' => ceil($total / $per_page)];
+}
+
+function search_wiki($query, $limit = 50) {
+    $pdo = wiki_db();
+    $results = [];
+    $like = "%" . $query . "%";
+    
+    // Search issues
+    $stmt = $pdo->prepare("SELECT game_name, summary, category, severity, 'issue' as result_type FROM issues WHERE game_name LIKE ? OR summary LIKE ? ORDER BY severity DESC LIMIT 50");
+    $stmt->execute([$like, $like]);
+    $results = array_merge($results, $stmt->fetchAll());
+    
+    // Search patches
+    $stmt = $pdo->prepare("SELECT game_name, title as summary, 'patch' as category, 0 as severity, 'patch' as result_type FROM patch_notes WHERE game_name LIKE ? OR title LIKE ? ORDER BY release_date DESC LIMIT 50");
+    $stmt->execute([$like, $like]);
+    $results = array_merge($results, $stmt->fetchAll());
+    
+    return $results;
+}
+
+// ── Route parsing ──
+$wiki_path = $_GET['wiki_path'] ?? '';
+$wiki_path = trim($wiki_path, '/');
+$parts = $wiki_path ? explode('/', $wiki_path) : [];
+$section = $parts[0] ?? '';
+$slug = $parts[1] ?? '';
+
+// ══════════════════════════════════════════════════════════
+//  SHARED HTML: Header + Nav + Footer
+// ══════════════════════════════════════════════════════════
+function wiki_head($title, $description, $canonical, $robots = 'index, follow', $extra_head = '') {
+    global $section;
+    if (!isset($section)) $section = '';
+    $st = safe($title);
+    $sd = safe($description);
+    $sc = safe($canonical);
+    ?><!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MG8TVREN6T"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-MG8TVREN6T');
+</script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><?= $st ?></title>
+<meta name="description" content="<?= $sd ?>">
+<link rel="canonical" href="<?= $sc ?>">
+<meta name="robots" content="<?= $robots ?>">
+<meta property="og:title" content="<?= $st ?>">
+<meta property="og:description" content="<?= $sd ?>">
+<meta property="og:type" content="website">
+<meta property="og:url" content="<?= $sc ?>">
+<meta property="og:site_name" content="GripAi Vault">
+<meta property="og:image" content="https://vl.gripnews.uk/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://vl.gripnews.uk/og-image.png">
+<meta name="twitter:site" content="@GripAi">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<?= $extra_head ?>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+    --bg:#0B0E17;--bg2:#111827;--bg3:#1a2234;--bg4:#1e293b;
+    --border:#1e293b;--border2:#2d3a50;
+    --t1:#f1f5f9;--t2:#94a3b8;--t3:#64748b;
+    --accent:#3b82f6;--accent2:#60a5fa;
+    --green:#22c55e;--orange:#f97316;--red:#ef4444;--yellow:#eab308;--purple:#a855f7;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;min-height:100vh}
+a{color:var(--accent);text-decoration:none;transition:color .15s}a:hover{color:var(--accent2)}
+code,.mono{font-family:'JetBrains Mono',monospace;font-size:.9em}
+
+/* Container */
+.w{max-width:1100px;margin:0 auto;padding:0 20px}
+
+/* Nav */
+
+/* Ecosystem Nav (GripAi standard) */
+.ws-nav{background:rgba(11,14,23,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 2rem;position:sticky;top:0;z-index:100}
+.ws-nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:48px}
+.ws-nav-brand{display:flex;align-items:center;gap:0.5rem;text-decoration:none;color:var(--t1)}
+.ws-nav-icon{width:24px;height:24px;background:linear-gradient(135deg,#4dabf7,#845ef7);border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#fff}
+.ws-nav-title{font-weight:700;font-size:0.85rem}
+.ws-nav-badge{background:rgba(255,145,0,0.15);color:#ff9100;font-size:0.6rem;font-weight:600;padding:2px 5px;border-radius:3px;letter-spacing:0.05em}
+.ws-nav-links{display:flex;gap:0.25rem;align-items:center}
+.ws-nav-links a{color:var(--t3);text-decoration:none;font-size:0.78rem;font-weight:500;padding:4px 8px;border-radius:5px;transition:all .2s;white-space:nowrap}
+.ws-nav-links a:hover,.ws-nav-links a.active{color:var(--t1);background:rgba(255,255,255,0.06)}
+.ws-nav-toggle{display:none;background:none;border:none;cursor:pointer;width:26px;height:18px;position:relative;padding:0;z-index:10002}
+.ws-nav-toggle span{display:block;width:100%;height:2px;background:var(--t1);border-radius:2px;position:absolute;left:0;transition:all .3s}
+.ws-nav-toggle span:nth-child(1){top:0}
+.ws-nav-toggle span:nth-child(2){top:8px}
+.ws-nav-toggle span:nth-child(3){top:16px}
+.ws-nav-toggle.open span:nth-child(1){transform:translateY(8px) rotate(45deg)}
+.ws-nav-toggle.open span:nth-child(2){opacity:0}
+.ws-nav-toggle.open span:nth-child(3){transform:translateY(-8px) rotate(-45deg)}
+.ws-nav-drawer{position:fixed;top:0;right:-320px;width:300px;max-width:85vw;height:100vh;background:var(--bg);border-left:1px solid var(--border);z-index:10001;transition:right .3s ease;padding:4rem 1.5rem 2rem;overflow-y:auto}
+.ws-nav-drawer.open{right:0}
+.ws-nav-drawer a{display:block;padding:0.7rem 1rem;color:var(--t3);text-decoration:none;font-size:0.9rem;font-weight:600;border-radius:6px;transition:all .2s;margin-bottom:0.15rem}
+.ws-nav-drawer a:hover{color:var(--t1);background:rgba(255,255,255,0.04)}
+.ws-nav-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:10000}
+.ws-nav-backdrop.open{display:block}
+
+.nav{border-bottom:1px solid var(--border);padding:14px 0;margin-bottom:32px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;position:sticky;top:48px;z-index:99;background:var(--bg)}
+.nav .brand{font-weight:800;font-size:1.15em;color:var(--t1);display:flex;align-items:center;gap:8px}
+.nav .brand .badge{font-size:.6em;background:var(--accent);color:#fff;padding:2px 8px;border-radius:4px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.nav .links{display:flex;gap:6px}
+.nav .links a{color:var(--t2);font-size:.88em;font-weight:500;padding:5px 10px;border-radius:6px;transition:all .15s}
+.nav .links a:hover,.nav .links a.on{color:var(--t1);background:var(--bg4)}
+.nav .search-box{margin-left:auto}
+.nav .search-box input{padding:6px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--t1);font-family:inherit;font-size:.85em;width:200px;outline:none;transition:border .15s}
+.nav .search-box input:focus{border-color:var(--accent)}
+.nav .search-box input::placeholder{color:var(--t3)}
+
+/* Breadcrumbs */
+.crumbs{font-size:.85em;color:var(--t3);margin-bottom:16px}.crumbs a{color:var(--t2)}.crumbs span{margin:0 6px}
+
+/* Page header */
+.ph{margin-bottom:28px}
+.ph h1{font-size:2em;font-weight:800;line-height:1.2;margin-bottom:6px}
+.ph .sub{color:var(--t2);font-size:1em}
+
+/* Stats bar */
+.stats{display:flex;gap:16px;margin-bottom:32px;flex-wrap:wrap}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 20px;min-width:120px}
+.stat .v{font-size:1.7em;font-weight:800;color:var(--accent);line-height:1}
+.stat .l{font-size:.75em;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+
+/* Cards grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:36px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px;transition:all .15s;display:block;color:var(--t1)}
+.card:hover{background:var(--bg3);border-color:var(--accent);color:var(--t1);transform:translateY(-1px)}
+.card .name{font-weight:600;font-size:1em;margin-bottom:6px}
+.card .meta{display:flex;gap:14px;font-size:.83em;color:var(--t2)}
+.card .meta .n{font-weight:600;color:var(--t1)}
+
+/* Sections */
+.sec{margin-bottom:36px}
+.sec h2{font-size:1.3em;font-weight:700;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sec h2 .cnt{font-size:.55em;background:var(--bg4);color:var(--t2);padding:2px 10px;border-radius:20px;font-weight:500}
+
+/* Issue rows */
+.row{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 18px;margin-bottom:6px;transition:background .15s}
+.row:hover{background:var(--bg3)}
+.row .rh{display:flex;align-items:flex-start;gap:10px;margin-bottom:4px}
+.row .rt{font-weight:600;font-size:.93em;flex:1}
+.sev{font-size:.68em;padding:2px 10px;border-radius:20px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap}
+.row .rm{font-size:.78em;color:var(--t3);display:flex;gap:14px;flex-wrap:wrap}
+.row .rm .tag{background:var(--bg4);padding:1px 8px;border-radius:4px;color:var(--t2)}
+
+/* Patch cards */
+.pc{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:10px;transition:background .15s}
+.pc:hover{background:var(--bg3)}
+.pc .pch{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+.pc .pct{font-weight:600;font-size:.95em}
+.pc .pcg{color:var(--accent);font-weight:500;font-size:.83em}
+.pc .pcd{color:var(--t3);font-size:.83em;white-space:nowrap}
+.pc .pcb{font-size:.83em;color:var(--t2);margin-top:8px}
+.pc .pcb h4{color:var(--t1);font-size:.83em;font-weight:600;margin:8px 0 4px}
+.pc .pcb ul{padding-left:18px;margin:0}
+.pc .pcb li{margin-bottom:2px}
+.pc .pcs{font-size:.73em;color:var(--t3);margin-top:10px}.pc .pcs a{color:var(--t2)}
+
+/* Cluster cards */
+.cc{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 18px;margin-bottom:6px}
+.cc .cl{font-weight:600;font-size:.93em;margin-bottom:4px}
+.cc .cm{font-size:.78em;color:var(--t3);display:flex;gap:14px;flex-wrap:wrap}
+
+/* Pagination */
+.pag{display:flex;justify-content:center;gap:6px;margin:28px 0}
+.pag a,.pag span{padding:7px 13px;border-radius:6px;font-size:.88em;font-weight:500}
+.pag a{background:var(--bg2);border:1px solid var(--border);color:var(--t2)}
+.pag a:hover{background:var(--bg3);color:var(--t1)}
+.pag .cur{background:var(--accent);color:#fff}
+
+/* Filter input */
+.filter{margin-bottom:20px}
+.filter input{width:100%;max-width:420px;padding:9px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--t1);font-family:inherit;font-size:.93em;outline:none;transition:border .15s}
+.filter input:focus{border-color:var(--accent)}
+.filter input::placeholder{color:var(--t3)}
+
+/* Hero */
+.hero{text-align:center;padding:48px 0 32px}
+.hero h1{font-size:2.4em;font-weight:800;margin-bottom:12px;line-height:1.15}
+.hero h1 .hl{background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero .sub{color:var(--t2);font-size:1.1em;max-width:600px;margin:0 auto 28px}
+.hero .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.hero .actions a{padding:10px 24px;border-radius:8px;font-weight:600;font-size:.95em;transition:all .15s}
+.hero .actions .primary{background:var(--accent);color:#fff}.hero .actions .primary:hover{background:var(--accent2);color:#fff}
+.hero .actions .secondary{background:var(--bg2);border:1px solid var(--border);color:var(--t2)}.hero .actions .secondary:hover{background:var(--bg3);color:var(--t1)}
+
+/* Homepage sections */
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:40px}
+.home-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px}
+.home-card h3{font-size:1.1em;font-weight:700;margin-bottom:14px}
+.home-card .item{padding:8px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:.9em}
+.home-card .item:last-child{border-bottom:none}
+.home-card .item a{color:var(--t1);font-weight:500}
+.home-card .item a:hover{color:var(--accent2)}
+.home-card .item .date{color:var(--t3);font-size:.82em}
+
+/* Footer */
+.ft{border-top:1px solid var(--border);padding:20px 0;margin-top:48px;text-align:center;font-size:.78em;color:var(--t3)}
+.ft a{color:var(--t2)}
+
+/* Empty */
+.empty{text-align:center;padding:48px 20px;color:var(--t3)}
+.empty .emo{font-size:2em;margin-bottom:12px}
+
+/* Responsive */
+@media(max-width:768px){
+    .ph h1{font-size:1.5em}.hero h1{font-size:1.7em}.stats{gap:10px}.stat{min-width:90px;padding:10px 14px}.stat .v{font-size:1.3em}
+    .grid{grid-template-columns:1fr}.home-grid{grid-template-columns:1fr}
+    .ws-nav-links{display:none}.ws-nav-toggle{display:block}.ws-nav{padding:0 1rem}
+    .nav{gap:10px}.nav .search-box{margin-left:0;width:100%}.nav .search-box input{width:100%}
+}
+
+/* Share Bar */
+.share-bar { display:flex; align-items:center; gap:8px; margin:8px 0 16px; flex-wrap:wrap; }
+.share-bar span { font-size:13px; color:#888; }
+.share-btn { display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:6px; font-size:12px; font-weight:600; text-decoration:none; color:#fff; transition:opacity .2s; }
+.share-btn:hover { opacity:.85; }
+.share-btn svg { width:14px; height:14px; fill:currentColor; }
+.share-x { background:#000; }
+.share-fb { background:#1877f2; }
+.share-rd { background:#ff4500; }
+.share-li { background:#0a66c2; }
+.share-copy { background:#374151; cursor:pointer; border:none; color:#fff; font-size:12px; font-weight:600; font-family:inherit; }
+.share-copy.copied { background:#10b981; }
+</style>
+<script defer src="https://gripai.uk/umami/script.js" data-website-id="082014cf"></script>
+</head>
+<body>
+<nav class="ws-nav">
+  <div class="ws-nav-inner">
+    <a class="ws-nav-brand" href="https://gripai.uk">
+      <div class="ws-nav-icon">G</div>
+      <span class="ws-nav-title">GripAi</span>
+      <span class="ws-nav-badge">ECOSYSTEM</span>
+    </a>
+    <div class="ws-nav-links">
+      
+      <a href="https://gripai.uk">GripAi</a>
+      <a href="https://gripai.uk">GameAi</a>
+      <a href="https://gripai.uk">GameGrip</a>
+      <a href="https://gripai.uk">Sandbox</a>
+      <a href="https://api.gripai.uk">Game API</a>
+      <a href="https://gripai.uk/safety">Safety API</a>
+      <a href="https://gripnews.uk">GripNews</a>
+      <a href="https://gripai.uk/blog">GameAi Blog</a>
+
+    </div>
+    <button class="ws-nav-toggle" id="ecoToggle" onclick="toggleEcoNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div id="ecoDrawer" class="ws-nav-drawer">
+  
+  <a href="https://gripai.uk">GripAi</a>
+  <a href="https://gripai.uk">GameAi</a>
+  <a href="https://gripai.uk">GameGrip</a>
+  <a href="https://gripai.uk">Sandbox</a>
+  <a href="https://api.gripai.uk">Game API</a>
+  <a href="https://gripai.uk/safety">Safety API</a>
+  <a href="https://gripnews.uk">GripNews</a>
+  <a href="https://gripai.uk/blog">GameAi Blog</a>
+</div>
+<div id="ecoBackdrop" class="ws-nav-backdrop" onclick="toggleEcoNav()"></div>
+<div class="w">
+<nav class="nav">
+    <a href="/" class="brand">GripAi <span class="badge">Vault</span></a>
+    <div class="links">
+        <a href="/" <?= $section === '' ? 'class="on"' : '' ?>>Home</a>
+        <a href="/games" <?= $section === 'games' ? 'class="on"' : '' ?>>Games</a>
+        <a href="/patches" <?= $section === 'patches' ? 'class="on"' : '' ?>>Patches</a>
+        <a href="/hardware" <?= $section === 'hardware' ? 'class="on"' : '' ?>>Hardware</a>
+        <a href="/drivers" <?= $section === 'drivers' ? 'class="on"' : '' ?>>Drivers</a>
+        <a href="/websites" <?= $section === 'websites' ? 'class="on"' : '' ?>>Websites</a>
+    </div>
+    <div class="search-box">
+        <form action="/search" method="get">
+            <input type="text" name="q" placeholder="Search games, issues..." value="<?= safe($_GET['q'] ?? '') ?>">
+        </form>
+    </div>
+</nav>
+<?php
+}
+
+function share_bar($url = '', $text = '') {
+    if (!$url) $url = 'https://vl.gripnews.uk' . ($_SERVER['REQUEST_URI'] ?? '/');
+    if (!$text) $text = 'Check this out on GripAi Vault';
+    $eu = urlencode($url);
+    $et = urlencode($text);
+?>
+<div class="share-bar">
+    <span>Share:</span>
+    <a class="share-btn share-x" href="https://x.com/intent/tweet?url=<?=$eu?>&text=<?=$et?>" target="_blank" rel="noopener" title="Share on X">
+        <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X
+    </a>
+    <a class="share-btn share-fb" href="https://www.facebook.com/sharer/sharer.php?u=<?=$eu?>" target="_blank" rel="noopener" title="Share on Facebook">
+        <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        Facebook
+    </a>
+    <a class="share-btn share-rd" href="https://reddit.com/submit?url=<?=$eu?>&title=<?=$et?>" target="_blank" rel="noopener" title="Share on Reddit">
+        <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm6.066 13.71c.147.246.186.541.106.812-.213.718-.986 1.327-2.146 1.766C14.946 16.77 13.535 17 12 17s-2.946-.23-4.026-.712c-1.16-.439-1.933-1.048-2.146-1.766a1.08 1.08 0 01.106-.812c.12-.2.3-.352.518-.44a.946.946 0 01-.036-.253c0-.517.42-.937.937-.937.258 0 .49.104.66.273.85-.53 1.94-.86 3.135-.903l.627-2.957a.328.328 0 01.39-.258l2.095.445a.984.984 0 011.908.243.984.984 0 01-.984.984.984.984 0 01-.956-.754l-1.87-.397-.548 2.576c1.14.06 2.177.39 2.994.9a.936.936 0 011.597.664c0 .088-.012.174-.036.253.218.088.398.24.518.44zM9.144 13.5a.984.984 0 100-1.968.984.984 0 000 1.968zm5.712 0a.984.984 0 100-1.968.984.984 0 000 1.968zm-4.59 1.395c.09.09.23.09.32 0 .447-.447 1.08-.673 1.714-.673s1.267.226 1.714.673c.09.09.23.09.32 0 .09-.09.09-.23 0-.32-.536-.536-1.27-.84-2.034-.84s-1.498.304-2.034.84c-.09.09-.09.23 0 .32z"/></svg>
+        Reddit
+    </a>
+    <a class="share-btn share-li" href="https://www.linkedin.com/sharing/share-offsite/?url=<?=$eu?>" target="_blank" rel="noopener" title="Share on LinkedIn">
+        <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+    </a>
+    <button class="share-btn share-copy" onclick="navigator.clipboard.writeText('<?=$url?>').then(()=>{this.textContent='Copied!';this.classList.add('copied');setTimeout(()=>{this.textContent='Copy Link';this.classList.remove('copied')},2000)})" title="Copy link">
+        Copy Link
+    </button>
+</div>
+<?php
+}
+
+function wiki_foot() {
+?>
+<footer class="ft">
+    <p>GripAi Vault &middot; Powered by jaffaAi intelligence &middot; Updated daily</p>
+    <p style="margin-top:4px">
+        <a href="https://gripai.uk">GripAi</a> &middot;
+        <a href="https://gripai.uk">GameAi</a> &middot;
+        <a href="https://www.facebook.com/share/1AgMJFGwUU/" target="_blank" rel="noopener">Facebook</a> &middot;
+        <a href="https://bsky.app/profile/gripai.uk" target="_blank" rel="noopener">Bluesky</a> &middot;
+        <a href="https://mastodon.social/@gripai" target="_blank" rel="noopener">Mastodon</a>
+    </p>
+</footer>
+</div>
+
+<script>
+function toggleEcoNav(){
+    var t=document.getElementById('ecoToggle'),
+        d=document.getElementById('ecoDrawer'),
+        b=document.getElementById('ecoBackdrop');
+    if(!t||!d||!b)return;
+    var o=d.classList.toggle('open');
+    t.classList.toggle('open');
+    b.classList.toggle('open');
+    document.body.style.overflow=o?'hidden':'';
+}
+</script>
+</body>
+</html>
+<?php
+}
+
+// ══════════════════════════════════════════════════════════
+//  PAGE: Homepage
+// ══════════════════════════════════════════════════════════
+function page_home() {
+    $stats = get_wiki_stats();
+    $top = get_top_games(12);
+    $recent = get_recent_patches(8);
+
+    wiki_head(
+        "GripAi Vault — Gaming Bug Intelligence",
+        "The open gaming bug intelligence wiki. Browse " . number_format($stats['games']) . " games, " . number_format($stats['issues']) . " known issues, and " . number_format($stats['patches']) . " patch notes tracked by jaffaAi.",
+        "https://vl.gripnews.uk/"
+    );
+    ?>
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"WebSite","name":"GripAi Vault","url":"https://vl.gripnews.uk/","description":"Gaming bug intelligence wiki powered by jaffaAi","potentialAction":{"@type":"SearchAction","target":"https://vl.gripnews.uk/search?q={search_term_string}","query-input":"required name=search_term_string"}}
+    </script>
+
+    <div class="hero">
+        <h1>Gaming Bug <span class="hl">Intelligence</span></h1>
+        <p class="sub">Known issues, crash fixes, and patch notes for <?= number_format($stats['games']) ?> games — tracked and verified by jaffaAi</p>
+        <div class="actions">
+            <a href="/games" class="primary">Browse Games</a>
+            <a href="/patches" class="secondary">Latest Patches</a>
+</div>
+    </div>
+
+    <?php
+    $hw = vps_api('/Jaffa/hardware/stats');
+    $dr = vps_api('/Jaffa/drivers/drivers/stats');
+    $hw_total = $hw['totals']['total_issues'] ?? 0;
+    $dr_total = $dr['total'] ?? 0;
+    $ws = vps_api('/monitor/websites/stats', 900);
+    $ws_total = $ws['total'] ?? 0;
+    $ws_up = $ws['up'] ?? 0;
+    ?>
+    <div class="stats">
+        <div class="stat"><div class="v"><?= number_format($stats['games']) ?></div><div class="l">Games</div></div>
+        <div class="stat"><div class="v"><?= number_format($stats['issues']) ?></div><div class="l">Known Issues</div></div>
+        <div class="stat"><div class="v"><?= number_format($stats['patches']) ?></div><div class="l">Patch Notes</div></div>
+        <div class="stat"><div class="v"><?= number_format($stats['clusters']) ?></div><div class="l">Issue Clusters</div></div>
+        <div class="stat"><div class="v"><?= number_format($hw_total) ?></div><div class="l">Hardware Issues</div></div>
+        <div class="stat"><div class="v"><?= number_format($dr_total) ?></div><div class="l">Driver Updates</div></div>
+        <div class="stat"><div class="v" style="color:<?= $ws_up == $ws_total ? '#22c55e' : '#ef4444' ?>"><?= $ws_up ?>/<?= $ws_total ?></div><div class="l">Sites Online</div></div>
+    </div>
+
+    <div class="home-grid">
+        <div class="home-card">
+            <h3>🔥 Most Tracked Games</h3>
+            <?php foreach ($top as $g): ?>
+            <div class="item">
+                <a href="/games/<?= safe(to_slug($g['game_name'])) ?>"><?= safe($g['game_name']) ?></a>
+                <span class="date"><?= $g['total'] ?> records</span>
+            </div>
+            <?php endforeach; ?>
+        </div>
+        <div class="home-card">
+            <h3>📋 Recent Patches</h3>
+            <?php foreach ($recent as $p): ?>
+            <div class="item">
+                <a href="/games/<?= safe(to_slug($p['game_name'])) ?>"><?= safe($p['game_name']) ?><?php if ($p['version']): ?> <span style="color:var(--t3)"><?= safe($p['version']) ?></span><?php endif; ?></a>
+                <span class="date"><?= format_date($p['release_date']) ?></span>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php
+    wiki_foot();
+}
+
+// ══════════════════════════════════════════════════════════
+//  PAGE: Games Index
+// ══════════════════════════════════════════════════════════
+function page_games() {
+    $games = get_all_games();
+    $total = count($games);
+    $ti = array_sum(array_column($games, 'issues'));
+    $tp = array_sum(array_column($games, 'patches'));
+
+    wiki_head(
+        "All Games — GripAi Vault",
+        "Browse $total games with $ti known issues and $tp patch notes in the GripAi intelligence database.",
+        "https://vl.gripnews.uk/games"
+    );
+    ?>
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"CollectionPage","name":"All Games","url":"https://vl.gripnews.uk/games","numberOfItems":<?= $total ?>}
+    </script>
+    <div class="crumbs"><a href="/">Wiki</a> <span>›</span> Games</div>
+    <?php share_bar("https://vl.gripnews.uk/games", "Browse " . count($games) . " games on GripAi Vault"); ?>
+    <div class="ph"><h1>🎮 All Games</h1><p class="sub"><?= number_format($total) ?> games tracked by jaffaAi intelligence</p></div>
+    <div class="stats">
+        <div class="stat"><div class="v"><?= number_format($total) ?></div><div class="l">Games</div></div>
+        <div class="stat"><div class="v"><?= number_format($ti) ?></div><div class="l">Issues</div></div>
+        <div class="stat"><div class="v"><?= number_format($tp) ?></div><div class="l">Patches</div></div>
+    </div>
+    <div class="filter"><input type="text" id="gf" placeholder="Filter games..." oninput="fG(this.value)"></div>
+    <div class="grid" id="gg">
+    <?php foreach ($games as $g): ?>
+        <a href="/games/<?= safe(to_slug($g['game_name'])) ?>" class="card" data-n="<?= safe(strtolower($g['game_name'])) ?>">
+            <div class="name"><?= safe($g['game_name']) ?></div>
+            <div class="meta">
+                <?php if ($g['issues'] > 0): ?><span><span class="n"><?= $g['issues'] ?></span> issues</span><?php endif; ?>
+                <?php if ($g['patches'] > 0): ?><span><span class="n"><?= $g['patches'] ?></span> patches</span><?php endif; ?>
+            </div>
+        </a>
+    <?php endforeach; ?>
+    </div>
+    <script>function fG(q){q=q.toLowerCase();document.querySelectorAll('.card').forEach(c=>{c.style.display=c.dataset.n.includes(q)?'':'none'})}</script>
+    <?php
+    wiki_foot();
+}
+
+// ══════════════════════════════════════════════════════════
+//  PAGE: Game Detail
+// ══════════════════════════════════════════════════════════
+function page_game($game_name) {
+    $slug = to_slug($game_name);
+    $issues = get_game_issues($game_name);
+    $patches = get_game_patches($game_name);
+    $clusters = get_game_clusters($game_name);
+    $evidence = get_game_evidence($game_name);
+    $sn = safe($game_name);
+    $ic = count($issues); $pc = count($patches); $cc = count($clusters); $ec = count($evidence);
+
+    wiki_head(
+        "$game_name — Known Issues & Patches — GripAi Vault",
+        "$ic known issues and $pc patch notes for $game_name. Bug reports, crash fixes, and intelligence tracked by jaffaAi.",
+        "https://vl.gripnews.uk/games/$slug"
+    );
+    ?>
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"Article","headline":"<?= $sn ?> — Known Issues & Patches","url":"https://vl.gripnews.uk/games/<?= $slug ?>","publisher":{"@type":"Organization","name":"GameGrip","url":"https://gripai.uk"}}
+    </script>
+    <div class="crumbs"><a href="/">Wiki</a> <span>›</span> <a href="/games">Games</a> <span>›</span> <?= $sn ?></div>
+    <?php share_bar("https://vl.gripnews.uk/games/" . to_slug($game_name), safe($game_name) . " — issues, patches & bug intel on GripAi Vault"); ?>
+    <div class="ph"><h1><?= $sn ?></h1><p class="sub">Known issues, patches, and intelligence tracked by jaffaAi</p></div>
+    <div class="stats">
+        <div class="stat"><div class="v"><?= $ic ?></div><div class="l">Issues</div></div>
+        <div class="stat"><div class="v"><?= $pc ?></div><div class="l">Patches</div></div>
+        <?php if ($cc > 0): ?><div class="stat"><div class="v"><?= $cc ?></div><div class="l">Clusters</div></div><?php endif; ?>
+        <?php if ($ec > 0): ?><div class="stat"><div class="v"><?= $ec ?></div><div class="l">Evidence</div></div><?php endif; ?>
+    </div>
+
+    <?php if ($ic > 0): ?>
+    <div class="sec" id="issues"><h2>🐛 Known Issues <span class="cnt"><?= $ic ?></span></h2>
+    <?php foreach ($issues as $i):[$sl,$sc]=severity_label($i['severity']); ?>
+    <div class="row"><div class="rh">
+        <div class="rt"><?= safe($i['summary'] ?: 'Untitled Issue') ?></div>
+        <span class="sev" style="background:<?= $sc ?>20;color:<?= $sc ?>"><?= $sl ?></span>
+    </div><div class="rm">
+        <?php if ($i['category'] && $i['category'] !== 'unknown'): ?><span class="tag"><?= safe($i['category']) ?></span><?php endif; ?>
+        <?php if ($i['state']): ?><span><?= safe($i['state']) ?></span><?php endif; ?>
+        <?php if ($i['source']): ?><span>via <?= safe($i['source']) ?></span><?php endif; ?>
+        <span><?= format_date($i['created_at'] ?? $i['enriched_at']) ?></span>
+    </div></div>
+    <?php endforeach; ?></div>
+    <?php endif; ?>
+
+    <?php if ($pc > 0): ?>
+    <div class="sec" id="patches"><h2>📋 Patch Notes <span class="cnt"><?= $pc ?></span></h2>
+    <?php foreach ($patches as $p):
+        $bf=parse_json_field($p['bug_fixes']);$nf=parse_json_field($p['new_features']);
+        $bc=parse_json_field($p['balance_changes']);$ki=parse_json_field($p['known_issues']);
+    ?>
+    <div class="pc"><div class="pch"><div>
+        <div class="pct"><?= safe($p['title'] ?: 'Untitled Patch') ?></div>
+        <?php if ($p['version']): ?><span class="mono" style="font-size:.78em;color:var(--t3)">v<?= safe($p['version']) ?></span><?php endif; ?>
+    </div><div class="pcd"><?= format_date($p['release_date']) ?></div></div>
+    <?php if (!empty($bf)||!empty($nf)||!empty($bc)||!empty($ki)): ?>
+    <div class="pcb">
+        <?php if (!empty($bf)): ?><h4>🔧 Bug Fixes</h4><ul><?php foreach(array_slice($bf,0,5) as $x): ?><li><?= safe(mb_substr($x,0,300)) ?></li><?php endforeach; ?></ul><?php endif; ?>
+        <?php if (!empty($nf)): ?><h4>✨ New Features</h4><ul><?php foreach(array_slice($nf,0,5) as $x): ?><li><?= safe(mb_substr($x,0,300)) ?></li><?php endforeach; ?></ul><?php endif; ?>
+        <?php if (!empty($bc)): ?><h4>⚖️ Balance Changes</h4><ul><?php foreach(array_slice($bc,0,3) as $x): ?><li><?= safe(mb_substr($x,0,300)) ?></li><?php endforeach; ?></ul><?php endif; ?>
+        <?php if (!empty($ki)): ?><h4>⚠️ Known Issues</h4><ul><?php foreach(array_slice($ki,0,3) as $x): ?><li><?= safe(mb_substr($x,0,300)) ?></li><?php endforeach; ?></ul><?php endif; ?>
+    </div>
+    <?php endif; ?>
+    <?php if ($p['source_url']): ?><div class="pcs">Source: <a href="<?= safe($p['source_url']) ?>" target="_blank" rel="noopener"><?= safe($p['source'] ?: 'link') ?></a></div><?php endif; ?>
+    </div>
+    <?php endforeach; ?></div>
+    <?php endif; ?>
+
+    <?php if ($cc > 0): ?>
+    <div class="sec" id="clusters"><h2>🔗 Issue Clusters <span class="cnt"><?= $cc ?></span></h2>
+    <?php foreach ($clusters as $c): ?>
+    <div class="cc"><div class="cl"><?= safe($c['label']) ?></div><div class="cm">
+        <span>Issues: <?= safe($c['issue_count']) ?></span>
+        <?php if ($c['status']): ?><span><?= safe($c['status']) ?></span><?php endif; ?>
+        <?php if ($c['category']&&$c['category']!=='unknown'): ?><span class="tag"><?= safe($c['category']) ?></span><?php endif; ?>
+        <span>Confidence: <?= number_format((float)$c['confidence']*100) ?>%</span>
+        <span>Last: <?= format_date($c['last_report_at']) ?></span>
+    </div></div>
+    <?php endforeach; ?></div>
+    <?php endif; ?>
+
+    <?php if ($ec > 0): ?>
+    <div class="sec" id="evidence"><h2>📎 Evidence <span class="cnt"><?= $ec ?></span></h2>
+    <?php foreach ($evidence as $e): ?>
+    <div class="row"><div class="rh">
+        <div class="rt"><?= safe(mb_substr($e['content'],0,200)) ?></div>
+        <span class="sev" style="background:var(--bg4);color:var(--t2)"><?= safe($e['type'] ?: 'evidence') ?></span>
+    </div><div class="rm">
+        <span>Source: <?= safe($e['source']) ?></span>
+        <span>Trust: <?= number_format((float)$e['trust_score']*100) ?>%</span>
+        <span><?= format_date($e['created_at']) ?></span>
+    </div></div>
+    <?php endforeach; ?></div>
+    <?php endif; ?>
+    <?php
+    wiki_foot();
+}
+
+// ══════════════════════════════════════════════════════════
+//  PAGE: Patches Timeline
+// ══════════════════════════════════════════════════════════
+function page_patches() {
+    $page = max(1, (int)($_GET['page'] ?? 1));
+    $data = get_all_patches_paged($page);
+    $total = $data['total'];
+
+    wiki_head(
+        "Patch Notes Timeline — GripAi Vault",
+        "Browse $total patch notes across all games. Bug fixes, updates, and balance changes tracked by jaffaAi.",
+        "https://vl.gripnews.uk/patches",
+        $page > 1 ? 'noindex, follow' : 'index, follow'
+    );
+    ?>
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"CollectionPage","name":"Patch Notes Timeline","url":"https://vl.gripnews.uk/patches","description":"Gaming patch notes and updates tracked by jaffaAi","numberOfItems":<?= (int)$total ?>,"isPartOf":{"@type":"WebSite","name":"GripAi Vault","url":"https://vl.gripnews.uk/"}}
+    </script>
+    <div class="crumbs"><a href="/">Wiki</a> <span>›</span> Patches</div>
+    <?php share_bar("https://vl.gripnews.uk/patches", "Patch Notes Timeline — GripAi Vault"); ?>
+    <div class="ph"><h1>📋 Patch Notes</h1><p class="sub">Latest patches and updates across all tracked games</p></div>
+    <div class="stats">
+        <div class="stat"><div class="v"><?= number_format($total) ?></div><div class="l">Total Patches</div></div>
+        <div class="stat"><div class="v"><?= $data['pages'] ?></div><div class="l">Pages</div></div>
+    </div>
+
+    <?php foreach ($data['rows'] as $p):
+        $bf=parse_json_field($p['bug_fixes']);$nf=parse_json_field($p['new_features']);
+    ?>
+    <div class="pc"><div class="pch"><div>
+        <div class="pct"><?= safe($p['title'] ?: 'Untitled Patch') ?></div>
+        <a href="/games/<?= safe(to_slug($p['game_name'])) ?>" class="pcg"><?= safe($p['game_name']) ?></a>
+    </div><div class="pcd"><?= format_date($p['release_date']) ?></div></div>
+    <?php if (!empty($bf)): ?>
+    <div class="pcb"><h4>🔧 Bug Fixes</h4>
+    <ul><?php foreach(array_slice($bf,0,3) as $x): ?><li><?= safe(mb_substr($x,0,200)) ?></li><?php endforeach; ?>
+    <?php if (count($bf)>3): ?><li style="color:var(--t3)">+ <?= count($bf)-3 ?> more</li><?php endif; ?></ul></div>
+    <?php endif; ?>
+    </div>
+    <?php endforeach; ?>
+
+    <?php if ($data['pages'] > 1): ?>
+    <div class="pag">
+        <?php if ($page>1): ?><a href="/patches?page=<?= $page-1 ?>">← Prev</a><?php endif; ?>
+        <?php for ($i=max(1,$page-3);$i<=min($data['pages'],$page+3);$i++): ?>
+            <?php if ($i===$page): ?><span class="cur"><?= $i ?></span><?php else: ?><a href="/patches?page=<?= $i ?>"><?= $i ?></a><?php endif; ?>
+        <?php endfor; ?>
+        <?php if ($page<$data['pages']): ?><a href="/patches?page=<?= $page+1 ?>">Next →</a><?php endif; ?>
+    </div>
+    <?php endif; ?>
+    <?php
+    wiki_foot();
+}
+
+// ══════════════════════════════════════════════════════════
+//  PAGE: Search
+// ══════════════════════════════════════════════════════════
+function page_search() {
+    $q = trim($_GET['q'] ?? '');
+    $results = $q ? search_wiki($q) : [];
+    $rc = count($results);
+
+    wiki_head(
+        ($q ? safe($q) . " — " : "") . "Search — GripAi Vault",
+        "Search gaming bug reports, issues, and patch notes in the GripAi Vault.",
+        "https://vl.gripnews.uk/search",
+        "noindex, follow"
+    );
+    ?>
+    <div class="crumbs"><a href="/">Wiki</a> <span>›</span> Search</div>
+    <div class="ph"><h1>🔍 Search</h1>
+    <?php if ($q): ?><p class="sub"><?= $rc ?> results for "<?= safe($q) ?>"</p><?php endif; ?>
+    </div>
+    <div class="filter" style="margin-bottom:28px">
+        <form action="/search" method="get">
+            <input type="text" name="q" placeholder="Search games, issues, patches..." value="<?= safe($q) ?>" autofocus>
+        </form>
+    </div>
+    <?php if ($q && $rc === 0): ?>
+    <div class="empty"><div class="emo">🔍</div><p>No results found for "<?= safe($q) ?>"</p><p style="margin-top:12px"><a href="/games">Browse all games →</a></p></div>
+    <?php elseif ($q): ?>
+    <?php foreach ($results as $r): ?>
+    <div class="row">
+        <div class="rh">
+            <a href="/games/<?= safe(to_slug($r['game_name'])) ?>" class="rt" style="color:var(--t1)"><?= safe($r['summary'] ?: $r['game_name']) ?></a>
+            <span class="sev" style="background:var(--bg4);color:var(--t2)"><?= safe($r['result_type']) ?></span>
+        </div>
+        <div class="rm">
+            <span class="tag"><?= safe($r['game_name']) ?></span>
+            <?php if ($r['category'] && $r['category'] !== 'unknown'): ?><span><?= safe($r['category']) ?></span><?php endif; ?>
+        </div>
+    </div>
+    <?php endforeach; ?>
+    <?php endif; ?>
+    <?php
+    wiki_foot();
+}
+
+
+// ══════════════════════════════════════════════════════════
+//  PAGE: Hardware
+// ══════════════════════════════════════════════════════════
+function page_hardware($cat_filter = '') {
+    $stats = vps_api('/Jaffa/hardware/stats');
+    $total = $stats['totals']['total_issues'] ?? 0;
+    $crawled = $stats['totals']['total_results'] ?? 0;
+    $last_crawl = $stats['totals']['last_crawl'] ?? '';
+    $by_cat = $stats['by_category'] ?? [];
+    $by_sev = $stats['by_severity'] ?? [];
+    $top_comp = $stats['top_components'] ?? [];
+
+    $cat_label = $cat_filter ? strtoupper($cat_filter) : 'All';
+    $cat_title = $cat_filter ? strtoupper($cat_filter) . " Issues" : "Hardware Intelligence";
+
+    // Fetch issues
+    $api_path = "/Jaffa/hardware/issues?limit=100";
+    if ($cat_filter) $api_path .= "&category=" . urlencode($cat_filter);
+    $issues_data = vps_api($api_path, 900);
+    $issues = $issues_data['issues'] ?? [];
+
+    $hw_canon = "https://vl.gripnews.uk/hardware" . ($cat_filter ? "/$cat_filter" : "");
+    $hw_desc = $cat_filter
+        ? "Browse " . strtoupper($cat_filter) . " hardware issues — component failures, performance bugs, and compatibility reports."
+        : "Track $total hardware issues across GPU, CPU, and RAM. Real-time intelligence from 10+ sources.";
+    wiki_head(
+        "$cat_title — GripAi Vault",
+        $hw_desc,
+        $hw_canon
+    );
+    ?>
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"CollectionPage","name":"<?= safe($cat_title) ?>","url":"<?= safe($hw_canon) ?>","description":"Hardware issues and component intelligence for gaming","numberOfItems":<?= (int)$total ?>,"isPartOf":{"@type":"WebSite","name":"GripAi Vault","url":"https://vl.gripnews.uk/"}}
+    </script>
+    <div class="crumbs"><a href="/">Wiki</a> <span>›</span> <?php if ($cat_filter): ?>
+<span>›</span> <?= strtoupper(safe($cat_filter)) ?><?php else: ?>Hardware<?php endif; ?></div>
+    <?php share_bar($hw_canon, safe($cat_title) . " — GripAi Vault"); ?>
+    <div class="ph"><h1>🖥️ <?= safe($cat_title) ?></h1><p class="sub">Hardware issues tracked by jaffaAi from 10+ sources<?php if ($last_crawl): ?> · Last crawl: <?= format_date($last_crawl) ?><?php endif; ?></p></div>
+
+    <div class="stats">
+        <?php foreach ($by_cat as $c): ?>
+        <div class="stat">
+            <div class="v" style="color:<?= $c['category']==='gpu'?'#4dabf7':($c['category']==='cpu'?'#f97316':'#22c55e') ?>"><?= $c['count'] ?></div>
+            <div class="l"><?= strtoupper(safe($c['category'])) ?> Issues</div>
+        </div>
+        <?php endforeach; ?>
+        <div class="stat"><div class="v" style="color:#ef4444"><?= $by_sev[0]['count'] ?? 0 ?></div><div class="l">Critical</div></div>
+        <div class="stat"><div class="v" style="color:#a855f7"><?= number_format($crawled) ?></div><div class="l">Sources Crawled</div></div>
+    </div>
+
+    <?php if (!$cat_filter): ?>
+    <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+        <a href="/hardware" class="card" style="padding:10px 18px;min-width:0;flex:0"><span class="name" style="font-size:.85em">All</span></a>
+        <a href="/hardware/gpu" class="card" style="padding:10px 18px;min-width:0;flex:0"><span class="name" style="font-size:.85em;color:#4dabf7">🎮 GPU</span></a>
+        <a href="/hardware/cpu" class="card" style="padding:10px 18px;min-width:0;flex:0"><span class="name" style="font-size:.85em;color:#f97316">⚡ CPU</span></a>
+        <a href="/hardware/ram" class="card" style="padding:10px 18px;min-width:0;flex:0"><span class="name" style="font-size:.85em;color:#22c55e">💾 RAM</span></a>
+    </div>
+    <?php endif; ?>
+
+    <?php if (!empty($top_comp) && !$cat_filter): ?>
+    <div class="sec"><h2>🔧 Top Components</h2>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px">
+        <?php foreach (array_slice($top_comp, 0, 8) as $c): ?>
+        <span style="background:var(--bg4);padding:4px 12px;border-radius:6px;font-size:.82em;color:var(--t2)"><?= safe($c['component']) ?> <strong style="color:var(--t1)"><?= $c['count'] ?></strong></span>
+        <?php endforeach; ?>
+    </div></div>
+    <?php endif; ?>
+
+    <div class="sec"><h2>🐛 Issues <span class="cnt"><?= count($issues) ?></span></h2>
+    <?php if (empty($issues)): ?>
+        <div class="empty"><div class="emo">🖥️</div><p>No hardware issues found<?= $cat_filter ? " for " . strtoupper($cat_filter) : "" ?>.</p></div>
+    <?php else: ?>
+    <?php foreach ($issues as $i): [$sl,$sc] = severity_hw_label($i['severity'] ?? ''); ?>
+    <div class="row"><div class="rh">
+        <div class="rt"><?= safe($i['title'] ?? 'Untitled') ?></div>
+        <span class="sev" style="background:<?= $sc ?>20;color:<?= $sc ?>"><?= $sl ?></span>
+    </div><div class="rm">
+        <?php $catc = ($i['category']??''); $catcol = $catc==='gpu'?'#4dabf7':($catc==='cpu'?'#f97316':'#22c55e'); ?>
+        <span class="tag" style="color:<?= $catcol ?>"><?= strtoupper(safe($catc)) ?></span>
+        <?php if (!empty($i['component'])): ?><span style="color:var(--t1);font-weight:500"><?= safe($i['component']) ?></span><?php endif; ?>
+        <span>via <?= safe($i['source'] ?? '') ?></span>
+        <span><?= format_date($i['created_at'] ?? '') ?></span>
+        <?php if (!empty($i['source_url'])): ?><a href="<?= safe($i['source_url']) ?>" target="_blank" rel="noopener" style="font-size:.75em">source ↗</a><?php endif; ?>
+    </div></div>
+    <?php endforeach; ?>
+    <?php endif; ?>
+    </div>
+    <?php
+    wiki_foot();
+}
+
+// ══════════════════════════════════════════════════════════
+//  PAGE: Drivers
+// ══════════════════════════════════════════════════════════
+function page_drivers($company_filter = '') {
+    $stats = vps_api('/Jaffa/drivers/drivers/stats');
+    $total = $stats['total'] ?? 0;
+    $companies = $stats['byCompany'] ?? [];
+
+    $page_title = $company_filter ? safe($company_filter) . " Drivers" : "Driver Updates";
+
+    // Fetch drivers
+    $api_path = "/Jaffa/drivers/drivers?limit=200";
+    if ($company_filter) $api_path .= "&company=" . urlencode($company_filter);
+    $drivers_data = vps_api($api_path, 900);
+    $drivers = $drivers_data['drivers'] ?? [];
+
+    // If filtering by company, only show matching
+    if ($company_filter) {
+        $drivers = array_filter($drivers, function($d) use ($company_filter) {
+            return strcasecmp($d['company'] ?? '', $company_filter) === 0;
+        });
+        $drivers = array_values($drivers);
+    }
+
+    $dr_canon = "https://vl.gripnews.uk/drivers" . ($company_filter ? "/" . to_slug($company_filter) : "");
+    $dr_desc = $company_filter
+        ? "Latest " . safe($company_filter) . " driver updates — download links, release notes, and version history."
+        : "Track $total driver updates from " . count($companies) . " hardware companies. GPU, CPU, firmware, and software releases from NVIDIA, AMD, Intel, and more.";
+    wiki_head(
+        "$page_title — GripAi Vault",
+        $dr_desc,
+        $dr_canon
+    );
+    ?>
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"CollectionPage","name":"<?= safe($page_title) ?>","url":"<?= safe($dr_canon) ?>","description":"Driver update tracking for gaming hardware","numberOfItems":<?= (int)$total ?>,"isPartOf":{"@type":"WebSite","name":"GripAi Vault","url":"https://vl.gripnews.uk/"}}
+    </script>
+    <div class="crumbs"><a href="/">Wiki</a> <span>›</span> <?php if ($company_filter): ?>
+<span>›</span> <?= safe($company_filter) ?><?php else: ?>Drivers<?php endif; ?></div>
+    <?php share_bar($dr_canon, safe($page_title) . " — GripAi Vault"); ?>
+    <div class="ph"><h1>🔄 <?= $page_title ?></h1><p class="sub"><?= number_format($total) ?> driver updates from <?= count($companies) ?> companies — tracked by jaffaAi</p></div>
+
+    <div class="stats">
+        <div class="stat"><div class="v"><?= number_format($total) ?></div><div class="l">Total Updates</div></div>
+        <div class="stat"><div class="v"><?= count($companies) ?></div><div class="l">Companies</div></div>
+    </div>
+
+    <?php if (!$company_filter && !empty($companies)): ?>
+    <div class="sec"><h2>🏢 Companies</h2>
+    <div class="grid">
+    <?php foreach (array_slice($companies, 0, 30) as $c): ?>
+        <a href="/drivers/<?= safe(to_slug($c['company'])) ?>" class="card">
+            <div class="name"><?= safe($c['company']) ?></div>
+            <div class="meta"><span><span class="n"><?= $c['count'] ?></span> updates</span></div>
+        </a>
+    <?php endforeach; ?>
+    </div></div>
+    <?php endif; ?>
+
+    <div class="sec"><h2>📦 <?= $company_filter ? safe($company_filter) . ' ' : '' ?>Updates <span class="cnt"><?= count($drivers) ?></span></h2>
+    <?php if (empty($drivers)): ?>
+        <div class="empty"><div class="emo">🔄</div><p>No driver updates found<?= $company_filter ? " for " . safe($company_filter) : "" ?>.</p></div>
+    <?php else: ?>
+    <?php foreach ($drivers as $d):
+        $cat = strtolower($d['category'] ?? 'other');
+        $cat_colors = ['gpu'=>'#a855f7','cpu'=>'#f97316','firmware'=>'#ef4444','networking'=>'#22c55e','storage'=>'#4dabf7','software'=>'#6b7280','mobile'=>'#ffd43b','peripheral'=>'#c084fc','chipset'=>'#86efac'];
+        $cc = $cat_colors[$cat] ?? '#6b7280';
+    ?>
+    <div class="pc"><div class="pch"><div>
+        <span style="display:inline-block;background:rgba(77,171,247,0.1);color:#4dabf7;padding:2px 10px;border-radius:12px;font-size:.7em;font-weight:600;margin-right:6px"><?= safe($d['company'] ?? '') ?></span>
+        <span style="display:inline-block;background:<?= $cc ?>20;color:<?= $cc ?>;padding:2px 8px;border-radius:12px;font-size:.65em;font-weight:600;text-transform:uppercase"><?= safe($cat) ?></span>
+        <div class="pct" style="margin-top:6px"><?= safe($d['title'] ?? 'Untitled') ?></div>
+    </div><div class="pcd"><?= format_date($d['release_date'] ?? $d['crawled_at'] ?? '') ?></div></div>
+    <?php if (!empty($d['description']) && $d['description'] !== $d['title']): ?>
+    <div style="font-size:.83em;color:var(--t2);margin-top:6px"><?= safe(mb_substr(strip_tags(html_entity_decode($d['description'] ?? '')), 0, 200)) ?></div>
+    <?php endif; ?>
+    <div class="pcs">
+        <?php if (!empty($d['version'])): ?><span class="mono" style="color:#22c55e;font-weight:600">v<?= safe($d['version']) ?></span> · <?php endif; ?>
+        <?php if (!empty($d['url'])): ?><a href="<?= safe($d['url']) ?>" target="_blank" rel="noopener">Source ↗</a> · <?php endif; ?>
+        <span style="color:var(--t3)"><?= safe($d['source'] ?? '') ?></span>
+    </div>
+    </div>
+    <?php endforeach; ?>
+    <?php endif; ?>
+    </div>
+    <?php
+    wiki_foot();
+}
+
+// ══════════════════════════════════════════════════════════
+//  PAGE: Websites
+// ══════════════════════════════════════════════════════════
+function page_websites($cat_filter = '') {
+    $sites_data = vps_api('/monitor/websites', 300);
+    $stats_data = vps_api('/monitor/websites/stats', 300);
+    $incidents_data = vps_api('/monitor/websites/incidents?days=7', 300);
+
+    $sites = $sites_data['websites'] ?? [];
+    $total = $stats_data['total'] ?? count($sites);
+    $up_count = $stats_data['up'] ?? 0;
+    $down_count = $stats_data['down'] ?? 0;
+    $avg_ms = $stats_data['avg_ms'] ?? 0;
+    $by_cat = $stats_data['byCategory'] ?? [];
+    $last_run = $stats_data['last_run'] ?? '';
+    $incidents = $incidents_data['incidents'] ?? [];
+
+    // Group sites by category
+    $grouped = [];
+    foreach ($sites as $s) {
+        $cat = $s['category'] ?? 'Other';
+        $grouped[$cat][] = $s;
+    }
+    ksort($grouped);
+
+    // Filter by category if specified
+    if ($cat_filter) {
+        $match_cat = null;
+        foreach ($grouped as $cat => $items) {
+            if (to_slug($cat) === $cat_filter) { $match_cat = $cat; break; }
+        }
+        if ($match_cat) {
+            $filtered = [$match_cat => $grouped[$match_cat]];
+            $grouped = $filtered;
+        }
+    }
+
+    $page_title = $cat_filter && isset($match_cat) ? $match_cat : "Website Monitor";
+
+    $ws_canon = "https://vl.gripnews.uk/websites" . ($cat_filter ? "/$cat_filter" : "");
+    if ($cat_filter && isset($match_cat)) {
+        $cat_count = count($grouped[$match_cat] ?? []);
+        $ws_desc = "Live uptime status for $cat_count $match_cat websites. Response times, incident history, and 24h uptime tracking.";
+    } else {
+        $ws_desc = "Real-time uptime monitoring for $total gaming websites and services. " . ($down_count > 0 ? "$down_count currently down." : "All systems operational.");
+    }
+    wiki_head(
+        "$page_title — GripAi Vault",
+        $ws_desc,
+        $ws_canon
+    );
+    ?>
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"CollectionPage","name":"<?= safe($page_title) ?>","url":"<?= safe($ws_canon) ?>","description":"<?= safe($ws_desc) ?>","numberOfItems":<?= (int)$total ?>,"isPartOf":{"@type":"WebSite","name":"GripAi Vault","url":"https://vl.gripnews.uk/"}}
+    </script>
+    <?php
+    ?>
+    <div class="crumbs"><a href="/">Wiki</a> <span>›</span> <?php if ($cat_filter && isset($match_cat)): ?><a href="/websites">Websites</a> <span>›</span> <?= safe($match_cat) ?><?php else: ?>Websites<?php endif; ?></div>
+    <?php share_bar($ws_canon, safe($page_title) . " — GripAi Vault"); ?>
+    <div class="ph"><h1>🌐 <?= safe($page_title) ?></h1><p class="sub">Real-time uptime & status tracking for gaming websites<?php if ($last_run): ?> · Last check: <?= date('H:i', strtotime($last_run)) ?> UTC<?php endif; ?></p></div>
+
+    <?php
+    $all_up = $down_count == 0;
+    $status_color = $all_up ? '#22c55e' : '#ef4444';
+    $status_bg = $all_up ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)';
+    $status_text = $all_up ? '✅ All Systems Operational' : "⚠️ $down_count Site" . ($down_count > 1 ? 's' : '') . " Down";
+    ?>
+    <div style="background:<?= $status_bg ?>;border:1px solid <?= $status_color ?>40;border-radius:10px;padding:14px 20px;margin-bottom:20px;text-align:center;font-weight:600;color:<?= $status_color ?>"><?= $status_text ?></div>
+
+    <div class="stats">
+        <div class="stat"><div class="v"><?= number_format($total) ?></div><div class="l">Sites Monitored</div></div>
+        <div class="stat"><div class="v" style="color:#22c55e"><?= number_format($up_count) ?></div><div class="l">Online</div></div>
+        <div class="stat"><div class="v" style="color:<?= $down_count > 0 ? '#ef4444' : '#22c55e' ?>"><?= number_format($down_count) ?></div><div class="l">Down</div></div>
+        <div class="stat"><div class="v" style="color:#4dabf7"><?= number_format((int)$avg_ms) ?></div><div class="l">Avg Response (ms)</div></div>
+        <div class="stat"><div class="v"><?= count($by_cat) ?></div><div class="l">Categories</div></div>
+    </div>
+
+    <?php if (!$cat_filter && !empty($by_cat)): ?>
+    <div style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap">
+        <?php foreach ($by_cat as $c):
+            $cat_up = (int)($c['up_count'] ?? 0);
+            $cat_total = (int)($c['total'] ?? 0);
+            $cat_ok = $cat_up === $cat_total;
+        ?>
+        <a href="/websites/<?= safe(to_slug($c['category'])) ?>" class="card" style="padding:10px 16px;min-width:0;flex:0 0 auto">
+            <div class="name" style="font-size:.82em;white-space:nowrap"><?= $cat_ok ? '🟢' : '🔴' ?> <?= safe($c['category']) ?></div>
+            <div class="meta" style="margin-top:2px"><span style="font-size:.75em"><?= $cat_up ?>/<?= $cat_total ?> up</span></div>
+        </a>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+
+    <?php if (!empty($incidents)): ?>
+    <div class="sec"><h2>⚠️ Recent Incidents (7 days) <span class="cnt"><?= count($incidents) ?></span></h2>
+    <?php foreach ($incidents as $inc): ?>
+    <div class="row" style="border-left:3px solid #f97316"><div class="rh">
+        <div class="rt"><?= safe($inc['title'] ?? '') ?></div>
+        <span class="sev" style="background:#f9731620;color:#f97316"><?= safe($inc['severity'] ?? 'warning') ?></span>
+    </div><div class="rm">
+        <span class="tag"><?= safe($inc['website_name'] ?? '') ?></span>
+        <span><?= safe($inc['source'] ?? '') ?></span>
+        <span><?= format_date($inc['published_at'] ?? $inc['crawled_at'] ?? '') ?></span>
+        <?php if (!empty($inc['source_url'])): ?><a href="<?= safe($inc['source_url']) ?>" target="_blank" rel="noopener" style="font-size:.75em">source ↗</a><?php endif; ?>
+    </div></div>
+    <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+
+    <?php foreach ($grouped as $cat => $cat_sites): ?>
+    <div class="sec"><h2><?= safe($cat) ?> <span class="cnt"><?= count($cat_sites) ?></span></h2>
+    <div class="grid">
+    <?php foreach ($cat_sites as $s):
+        $is_up = $s['is_up'] == 1;
+        $uptime = $s['uptime_24h'] ?? '?';
+        $ms = $s['response_time_ms'] ?? $s['avg_response_ms'] ?? null;
+        $favicon = 'https://www.google.com/s2/favicons?domain=' . urlencode(parse_url($s['url'], PHP_URL_HOST) ?? '') . '&sz=32';
+    ?>
+    <a href="<?= safe($s['url']) ?>" target="_blank" rel="noopener" class="card" style="<?= !$is_up ? 'border-color:#ef4444' : '' ?>">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+            <img src="<?= safe($favicon) ?>" alt="<?= safe($s['name']) ?> favicon" style="width:20px;height:20px;border-radius:4px" onerror="this.style.display='none'" loading="lazy">
+            <div class="name" style="margin:0"><?= safe($s['name']) ?></div>
+            <span style="margin-left:auto;font-size:.7em;padding:2px 8px;border-radius:10px;font-weight:600;<?= $is_up ? 'background:rgba(34,197,94,0.15);color:#22c55e' : 'background:rgba(239,68,68,0.15);color:#ef4444' ?>"><?= $is_up ? 'UP' : 'DOWN' ?></span>
+        </div>
+        <div class="meta">
+            <span>Uptime: <span class="n"><?= safe($uptime) ?>%</span></span>
+            <?php if ($ms): ?><span>Response: <span class="n"><?= number_format((int)$ms) ?>ms</span></span><?php endif; ?>
+            <?php if ($s['status_code']): ?><span>HTTP <?= safe($s['status_code']) ?></span><?php endif; ?>
+        </div>
+        <?php if (!$is_up && $s['error_message']): ?>
+        <div style="margin-top:6px;font-size:.78em;color:#ef4444"><?= safe($s['error_message']) ?></div>
+        <?php endif; ?>
+    </a>
+    <?php endforeach; ?>
+    </div></div>
+    <?php endforeach; ?>
+    <?php
+    wiki_foot();
+}
+
+// ══════════════════════════════════════════════════════════
+//  PAGE: 404
+// ══════════════════════════════════════════════════════════
+function page_404() {
+    http_response_code(404);
+    wiki_head("Page Not Found — GripAi Vault", "The requested page was not found.", "https://vl.gripnews.uk/", "noindex, follow");
+    ?>
+    <div class="empty"><div class="emo">🔍</div><h2>Page Not Found</h2><p style="margin-top:12px"><a href="/games">Browse all games →</a></p></div>
+    <?php
+    wiki_foot();
+}
+
+// ══════════════════════════════════════════════════════════
+//  ROUTER
+// ══════════════════════════════════════════════════════════
+try {
+    if ($section === '' && $wiki_path === '') {
+        page_home();
+    } elseif ($section === 'games' && $slug) {
+        $gn = game_from_slug($slug);
+        $gn ? page_game($gn) : page_404();
+    } elseif ($section === 'games') {
+        page_games();
+    } elseif ($section === 'patches' && $slug) {
+        $gn = game_from_slug($slug);
+        if ($gn) { header("Location: /games/" . to_slug($gn) . "#patches", true, 301); exit; }
+        page_404();
+    } elseif ($section === 'patches') {
+        page_patches();
+    } elseif ($section === 'search') {
+        page_search();
+    } elseif ($section === 'hardware' && $slug) {
+        page_hardware($slug);
+    } elseif ($section === 'hardware') {
+        page_hardware();
+    } elseif ($section === 'drivers' && $slug) {
+        // Resolve company slug back to name
+        $companies_data = vps_api('/Jaffa/drivers/drivers/companies');
+        $company_name = null;
+        if (is_array($companies_data)) {
+            foreach ($companies_data as $c) {
+                if (to_slug($c['company']) === $slug) { $company_name = $c['company']; break; }
+            }
+        }
+        $company_name ? page_drivers($company_name) : page_404();
+    } elseif ($section === 'drivers') {
+        page_drivers();
+    } elseif ($section === 'websites' && $slug) {
+        page_websites($slug);
+    } elseif ($section === 'websites') {
+        page_websites();
+    } else {
+        page_404();
+    }
+} catch (Exception $e) {
+    http_response_code(500);
+    echo "<html><body style='background:#0B0E17;color:#f1f5f9;font-family:sans-serif;padding:40px;text-align:center'><h1>Something went wrong</h1><p>Please try again later.</p>
+<script>
+function toggleEcoNav(){
+    var t=document.getElementById('ecoToggle'),
+        d=document.getElementById('ecoDrawer'),
+        b=document.getElementById('ecoBackdrop');
+    if(!t||!d||!b)return;
+    var o=d.classList.toggle('open');
+    t.classList.toggle('open');
+    b.classList.toggle('open');
+    document.body.style.overflow=o?'hidden':'';
+}
+</script>
+</body></html>";
+}

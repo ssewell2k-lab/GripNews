@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /auth/
+Disallow: /user/
+
+Sitemap: https://auth.gamegrip.cloud/sitemap.xml
